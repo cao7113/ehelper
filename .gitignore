@@ -27,4 +27,3 @@ ehelper-*.tar
 
 # Ignore archive zip files
 ehelper-*.ez
-ehelper

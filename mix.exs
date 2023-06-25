@@ -8,8 +8,7 @@ defmodule Ehelper.MixProject do
       elixir: "~> 1.14",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-      aliases: aliases(),
-      escript: escript()
+      aliases: aliases()
     ]
   end
 
@@ -32,12 +31,7 @@ defmodule Ehelper.MixProject do
 
   defp aliases() do
     [
-      up: "cmd MIX_ENV=prod mix archive.install --force",
-      sup: "cmd mix escript.install --force"
+      up: "cmd MIX_ENV=prod mix archive.install --force"
     ]
-  end
-
-  def escript do
-    [main_module: Ehelper.CLI]
   end
 end

@@ -1,5 +1,11 @@
-# Ehelper - Elixir helpers
+# Ehelper - helper archive tasks
 
 ## Install
 
-`mix up`
+```
+mix archive.install github cao7113/ehelper
+mix try
+
+## or locally
+mix up
+```
