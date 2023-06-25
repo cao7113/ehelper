@@ -4,8 +4,8 @@
 
 ```
 mix archive.install github cao7113/ehelper
-mix try
+mix eh
 
-## or locally
+## locally update
 mix up
 ```

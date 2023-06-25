@@ -1,8 +1,8 @@
-defmodule Mix.Tasks.Conf do
+defmodule Mix.Tasks.Eh.App.Env do
   @moduledoc """
-  Read current application config
+  Show application env config
   """
-  @shortdoc "show conf"
+  @shortdoc "show application env config"
 
   use Mix.Task
 
