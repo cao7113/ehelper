@@ -1,6 +1,6 @@
 defmodule Mix.Tasks.Eh do
   @moduledoc """
-  List tasks
+  List eh tasks
   """
   @shortdoc "list helper tasks"
   use Mix.Task

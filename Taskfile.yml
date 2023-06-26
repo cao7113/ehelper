@@ -1,0 +1,7 @@
+# https://taskfile.dev
+version: '3'
+tasks:
+  default: mix test
+  sh: iex --erl "-kernel shell_history enabled" -S mix
+
+# Generated at 2023-06-26 02:16:01.760822Z by ehelper task

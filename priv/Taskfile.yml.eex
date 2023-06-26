@@ -1,0 +1,7 @@
+# https://taskfile.dev
+version: '3'
+tasks:
+  default: mix test
+  sh: iex --erl "-kernel shell_history enabled" -S mix
+
+# Generated at <%= DateTime.utc_now() %> by ehelper task
