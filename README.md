@@ -1,4 +1,4 @@
-# Ehelper - helper archive tasks
+# Ehelper - helper tasks in archive
 
 ## Install
 

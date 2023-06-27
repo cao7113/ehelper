@@ -1,6 +1,16 @@
 defmodule Httpc do
   @moduledoc """
   Simple HTTP client by wrapping :httpc
+
+  ## httpc
+
+  Great httpc cheatsheet post:  https://elixirforum.com/t/httpc-cheatsheet/50337
+
+  iex>
+    :inets.start
+    :ssl.start
+    :httpc.request 'https://elixir-lang.org'
+
   """
 
   require Logger
@@ -60,6 +70,23 @@ defmodule Httpc do
     # profile = :crypto.strong_rand_bytes(4) |> Base.encode16() |> String.to_atom()
     # {:ok, pid} = :inets.start(:httpc, profile: profile)
     {:ok, pid} = :inets.start(:httpc, profile: nil)
+
+    # todo: use this better
+    # ssl: [
+    #   verify: :verify_peer,
+    #   cacerts: :public_key.cacerts_get(),
+    #   customize_hostname_check: [
+    #     match_fun: :public_key.pkix_verify_hostname_match_fun(:https)
+    #   ]
+    # ]
+    # ssl:connect("example.net", 443, [
+    #     {verify, verify_peer},
+    #     {cacerts, public_key:cacerts_get()},
+    #     {depth, 3},
+    #     {customize_hostname_check, [
+    #         {match_fun, public_key:pkix_verify_hostname_match_fun(https)}
+    #     ]}
+    # ]).
 
     resp =
       case method do
