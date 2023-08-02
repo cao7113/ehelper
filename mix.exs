@@ -15,7 +15,8 @@ defmodule Ehelper.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger, :crypto],
+      extra_applications: [:inets, :ssl, :logger, :crypto],
+      # extra_applications: extra_applications(Mix.env()) ++ [:logger, :eex, :crypto, :public_key],
       mod: {Ehelper.Application, []}
     ]
   end

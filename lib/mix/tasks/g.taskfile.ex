@@ -1,4 +1,4 @@
-defmodule Mix.Tasks.Eh.Gen.Taskfile do
+defmodule Mix.Tasks.G.Taskfile do
   @shortdoc "gen Taskfile.yml"
   use Mix.Task
 
@@ -20,7 +20,7 @@ defmodule Mix.Tasks.Eh.Gen.Taskfile do
       Mix.raise("Expected \"mix eh.gen.taskfile\" without arguments, got: #{inspect(args)}")
     end
 
-    Mix.Generator.copy_template(tmpl_file("Taskfile.yml.mix.eex"), "Taskfile.yml", [], opts)
+    Mix.Generator.copy_template(tmpl_file("Taskfile.yml.eex"), "Taskfile.yml", [], opts)
   end
 
   def tmpl_file(priv_file) do

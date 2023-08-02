@@ -14,7 +14,9 @@ defmodule Mix.Tasks.Eh.Try do
     end
     |> output
 
-    output("\n## Mix Info env: #{Mix.env()} target: #{Mix.target()}")
+    output(
+      "\n## Mix Info env: #{Mix.env()} target: #{Mix.target()} build-info: #{System.build_info() |> inspect}"
+    )
 
     Mix.Project.build_path()
     |> IO.inspect(label: "build-path")

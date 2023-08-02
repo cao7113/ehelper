@@ -122,7 +122,8 @@ defmodule Httpc do
 
   # https://github.com/phoenixframework/phoenix/blob/v1.7.6/lib/mix/tasks/phx.gen.release.ex#L235
 
-  # iex> Httpc.fetch_body!("https://163.com")
+  # iex>  Httpc.fetch_body!("https://163.com")
+  # mix eh.fetch https://hub.docker.com/v2/namespaces/hexpm/repositories/elixir/tags\?name\=1.14.5-erlang-25.3-debian-bullseye-
   def fetch_body!(url) do
     url = String.to_charlist(url)
     Logger.debug("Fetching latest image information from #{url}")
@@ -168,4 +169,65 @@ defmodule Httpc do
   #   otp_major_vsn = :erlang.system_info(:otp_release) |> List.to_integer()
   #   if otp_major_vsn < 25, do: [:"tlsv1.2"], else: [:"tlsv1.2", :"tlsv1.3"]
   # end
+
+  @doc """
+  Get url from httpc, copied from https://github.com/phoenixframework/phoenix/blob/v1.7.7/lib/mix/tasks/phx.gen.release.ex#L192
+
+  iex>  Httpc.fetch_body2!("https://hub.docker.com/v2/namespaces/hexpm/repositories/elixir/tags?name=1.14.5-erlang-25.3-debian-bullseye-")
+
+  mix eh.fetch https://hub.docker.com/v2/namespaces/hexpm/repositories/elixir/tags\?name\=1.14.5-erlang-25.3-debian-bullseye- -m 2
+  """
+  def fetch_body2!(url) do
+    url = String.to_charlist(url)
+    Logger.debug("Fetching latest image information from #{url}")
+
+    {:ok, _} = Application.ensure_all_started(:inets)
+    {:ok, _} = Application.ensure_all_started(:ssl)
+
+    if proxy = System.get_env("HTTP_PROXY") || System.get_env("http_proxy") do
+      Logger.debug("Using HTTP_PROXY: #{proxy}")
+      %{host: host, port: port} = URI.parse(proxy)
+      :httpc.set_options([{:proxy, {{String.to_charlist(host), port}, []}}])
+    end
+
+    if proxy = System.get_env("HTTPS_PROXY") || System.get_env("https_proxy") do
+      Logger.debug("Using HTTPS_PROXY: #{proxy}")
+      %{host: host, port: port} = URI.parse(proxy)
+      :httpc.set_options([{:https_proxy, {{String.to_charlist(host), port}, []}}])
+    end
+
+    # https://erlef.github.io/security-wg/secure_coding_and_deployment_hardening/inets
+    http_options = [
+      # ssl: [
+      #   verify: :verify_peer,
+      #   cacertfile: String.to_charlist(CAStore.file_path()),
+      #   depth: 3,
+      #   customize_hostname_check: [
+      #     match_fun: :public_key.pkix_verify_hostname_match_fun(:https)
+      #   ],
+      #   versions: protocol_versions()
+      # ]
+
+      # 清除对castore的依赖
+      ssl: [
+        verify: :verify_peer,
+        cacerts: :public_key.cacerts_get(),
+        depth: 3,
+        customize_hostname_check: [
+          match_fun: :public_key.pkix_verify_hostname_match_fun(:https)
+        ],
+        versions: protocol_versions()
+      ]
+    ]
+
+    case :httpc.request(:get, {url, []}, http_options, body_format: :binary) do
+      {:ok, {{_, 200, _}, _headers, body}} -> body
+      other -> raise "couldn't fetch #{url}: #{inspect(other)}"
+    end
+  end
+
+  defp protocol_versions do
+    otp_major_vsn = :erlang.system_info(:otp_release) |> List.to_integer()
+    if otp_major_vsn < 25, do: [:"tlsv1.2"], else: [:"tlsv1.2", :"tlsv1.3"]
+  end
 end
