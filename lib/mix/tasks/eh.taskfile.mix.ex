@@ -1,6 +1,8 @@
-defmodule Mix.Tasks.G.Taskfile do
-  @shortdoc "gen Taskfile.yml"
+defmodule Mix.Tasks.Eh.Taskfile.Mix do
+  @shortdoc "gen Taskfile.yml for mix project"
   use Mix.Task
+
+  import Mix.Generator
 
   @switches [
     force: :boolean,
@@ -20,7 +22,7 @@ defmodule Mix.Tasks.G.Taskfile do
       Mix.raise("Expected \"mix eh.gen.taskfile\" without arguments, got: #{inspect(args)}")
     end
 
-    Mix.Generator.copy_template(tmpl_file("Taskfile.yml.eex"), "Taskfile.yml", [], opts)
+    copy_template(tmpl_file("Taskfile.yml.mix.eex"), "Taskfile.yml", [], opts)
   end
 
   def tmpl_file(priv_file) do

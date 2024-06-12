@@ -1,4 +1,4 @@
 # https://taskfile.dev
 version: '3'
 tasks:
-  default: echo hi
+  default: echo hi task

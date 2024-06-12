@@ -2,7 +2,7 @@ defmodule Mix.Tasks.Eh do
   @moduledoc """
   List eh tasks
   """
-  @shortdoc "list helper tasks"
+  @shortdoc "list ehelper tasks"
   use Mix.Task
 
   @impl true

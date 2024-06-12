@@ -16,7 +16,6 @@ defmodule Ehelper.MixProject do
   def application do
     [
       extra_applications: [:inets, :ssl, :logger, :crypto],
-      # extra_applications: extra_applications(Mix.env()) ++ [:logger, :eex, :crypto, :public_key],
       mod: {Ehelper.Application, []}
     ]
   end
@@ -32,6 +31,7 @@ defmodule Ehelper.MixProject do
 
   defp aliases() do
     [
+      # up: ["archive.build", "cmd MIX_ENV=prod mix archive.install --force"]
       up: "cmd MIX_ENV=prod mix archive.install --force"
     ]
   end

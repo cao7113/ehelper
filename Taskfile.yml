@@ -1,7 +1,7 @@
 # https://taskfile.dev
-version: "3"
+version: '3'
 tasks:
   default: mix test
   sh: iex --erl "-kernel shell_history enabled" -S mix
-  up: mix up
-# Generated at 2023-06-26 02:16:01.760822Z by ehelper task
+
+# Generated at 2024-06-12 10:10:13.973345Z by `mix eh.taskfile.mix` task
