@@ -1,13 +1,13 @@
-# Ehelper - helper tasks in arlang archive
+# Ehelper
 
-Handy mix tasks for daily use.
+daily mix tasks in archive.
 
 ## Install
 
 ```bash
-mix archive.install github cao7113/ehelper
+mix archive.install hex ehelper --force
 mix eh
 
-## locally update
+## locally install or update
 mix up
 ```
