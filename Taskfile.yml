@@ -10,3 +10,4 @@ tasks:
       - mix hex.publish --yes --replace
   # mix hex.publish package
   pub-docs: mix hex.publish docs --yes
+  # HEX_API_KEY=xxx mix hex.publish --yes

@@ -4,13 +4,13 @@ defmodule Ehelper.MixProject do
   def project do
     [
       app: :ehelper,
-      version: "0.1.1",
+      version: "0.1.2",
       elixir: "~> 1.16",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       aliases: aliases(),
       name: "ehelper",
-      description: "daily elixir helper tasks",
+      description: "daily mix helper tasks",
       source_url: "https://github.com/cao7113/ehelper",
       homepage_url: "https://github.com/cao7113/ehelper",
       package: package()
