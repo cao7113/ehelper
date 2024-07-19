@@ -37,7 +37,6 @@ defmodule Ehelper.MixProject do
 
   defp aliases() do
     [
-      # up: ["archive.build", "cmd MIX_ENV=prod mix archive.install --force"]
       up: "cmd MIX_ENV=prod mix archive.install --force"
     ]
   end

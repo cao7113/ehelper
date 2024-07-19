@@ -1,17 +1,16 @@
-# https://taskfile.dev
+# https://taskfile.dev/usage/
 version: "3"
 tasks:
   default: mix test
   sh: iex --erl "-kernel shell_history enabled" -S mix
 
   pub:
-    desc: publish package
+    desc: publish hex package
     cmds:
       - mix hex.publish --yes --replace
-
-  # mix hex.publish package
+    env:
+      # HEX_API_KEY: $HEX_API_KEY
   pub-docs: mix hex.publish docs --yes
-  # HEX_API_KEY=xxx mix hex.publish --yes
 
   ## Git ops
   cmt: mix git_ops.release --yes && git push --follow-tags

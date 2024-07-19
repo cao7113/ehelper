@@ -3,16 +3,16 @@ defmodule Mix.Tasks.Eh.Test do
   use Mix.Task
 
   @impl true
-  def run(args) do
-    args
-    |> case do
-      [] -> "No user args input."
-      _ -> Enum.join(args, " ")
-    end
-    |> output
+  def run(_args) do
+    # args
+    # |> case do
+    #   [] -> "No user args input."
+    #   _ -> Enum.join(args, " ")
+    # end
+    # |> output
 
     output(
-      "\n## Mix Info env: #{Mix.env()} target: #{Mix.target()} build-info: #{System.build_info() |> inspect}"
+      "\n## Mix Info env: #{Mix.env()}, target: #{Mix.target()} \nbuild-info: #{System.build_info() |> inspect}"
     )
 
     Mix.Project.build_path()
