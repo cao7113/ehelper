@@ -1,5 +1,5 @@
-defmodule Mix.Tasks.Eh.Taskfile do
-  @shortdoc "Gen Taskfile.yml"
+defmodule Mix.Tasks.Eh.Fly do
+  @shortdoc "Gen fly.toml to deploy app to https://fly.io"
 
   use Mix.Task
   import Mix.Generator
@@ -19,10 +19,12 @@ defmodule Mix.Tasks.Eh.Taskfile do
     {opts, args} = OptionParser.parse!(args, strict: @switches, aliases: @aliases)
 
     if args != [] do
-      Mix.raise("Expected \"mix eh.taskfile\" without arguments, got: #{inspect(args)}")
+      Mix.raise("Expected \"mix eh.fly\" without arguments, got: #{inspect(args)}")
     end
 
-    copy_template(tmpl_file("Taskfile.yml.eex"), "Taskfile.yml", [], opts)
+    dirname = File.cwd!() |> Path.basename() |> String.capitalize()
+
+    copy_template(tmpl_file("fly.toml.eex"), "fly.toml", [dirname: dirname], opts)
   end
 
   def tmpl_file(priv_file) do

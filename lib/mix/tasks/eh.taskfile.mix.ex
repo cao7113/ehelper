@@ -1,5 +1,5 @@
 defmodule Mix.Tasks.Eh.Taskfile.Mix do
-  @shortdoc "gen Taskfile.yml for mix project"
+  @shortdoc "Gen Taskfile.yml for mix project"
   use Mix.Task
 
   import Mix.Generator

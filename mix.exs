@@ -1,11 +1,13 @@
 defmodule Ehelper.MixProject do
   use Mix.Project
 
+  @version "0.1.2"
+
   def project do
     [
       app: :ehelper,
-      version: "0.1.2",
-      elixir: "~> 1.16",
+      version: @version,
+      elixir: "~> 1.17",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       aliases: aliases(),
@@ -28,8 +30,8 @@ defmodule Ehelper.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      # https://hexdocs.pm/ex_doc/readme.html
-      {:ex_doc, "~> 0.34", only: :dev, runtime: false}
+      {:ex_doc, "~> 0.34", only: :dev, runtime: false},
+      {:git_ops, "~> 2.6", only: [:dev], runtime: false}
     ]
   end
 

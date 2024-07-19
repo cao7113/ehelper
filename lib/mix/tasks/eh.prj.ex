@@ -1,8 +1,5 @@
 defmodule Mix.Tasks.Eh.Prj do
-  @moduledoc """
-  Project config info
-  """
-  @shortdoc "show project config"
+  @shortdoc "Show project config"
   use Mix.Task
 
   @impl true

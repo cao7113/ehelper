@@ -1,8 +1,5 @@
 defmodule Mix.Tasks.Eh.App.Env do
-  @moduledoc """
-  Show application env config
-  """
-  @shortdoc "show application env config"
+  @shortdoc "Show application env config, eg. mix eh.app.env logger"
 
   use Mix.Task
 

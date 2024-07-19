@@ -1,0 +1,16 @@
+# https://fly.io/docs/reference/configuration/
+
+[build]
+
+[env]
+  # ERL_AFLAGS = "-proto_dist inet6_tcp"         # enable ipv6 for Fly.io private networking
+
+[[mounts]]
+
+[http_service]
+  internal_port = 8080                         # the Livebook app listens on [::]:8080
+  force_https = true
+  auto_stop_machines = true                    # when no http connections, the Machine stops
+  auto_start_machines = true                   # Fly proxy restarts the Machine on request
+  min_machines_running = 0                     # allow all Machines to stop
+  processes = ["app"]                          # the default process group

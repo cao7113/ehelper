@@ -1,0 +1,3 @@
+# Hello <%= @dirname %>
+
+Happy world!

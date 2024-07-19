@@ -1,8 +1,5 @@
-defmodule Mix.Tasks.Eh.Try do
-  @moduledoc """
-  Try task
-  """
-  @shortdoc "Just try"
+defmodule Mix.Tasks.Eh.Test do
+  @shortdoc "Just test task"
   use Mix.Task
 
   @impl true
