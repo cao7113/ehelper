@@ -1,4 +1,7 @@
-# https://fly.io/docs/reference/configuration/
+# fly.toml app configuration file generated for <%=@dirname%> on <%=DateTime.utc_now()%>
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
 
 [build]
 
