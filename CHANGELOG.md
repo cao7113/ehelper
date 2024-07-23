@@ -5,6 +5,15 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v0.1.5](https://github.com/cao7113/ehelper/compare/v0.1.4...v0.1.5) (2024-07-23)
+
+
+
+
+### Improvements:
+
+* add eh.gh.ci task
+
 ## [v0.1.4](https://github.com/cao7113/ehelper/compare/v0.1.3...v0.1.4) (2024-07-19)
 
 
