@@ -1,5 +1,9 @@
 # Ehelper
 
+[![CI](https://github.com/cao7113/ehelper/actions/workflows/ci.yml/badge.svg)](https://github.com/cao7113/ehelper/actions/workflows/ci.yml)
+[![Release](https://github.com/cao7113/ehelper/actions/workflows/release.yml/badge.svg)](https://github.com/cao7113/ehelper/actions/workflows/release.yml)
+[![Hex](https://img.shields.io/hexpm/v/ehelper)](https://hex.pm/packages/ehelper)
+
 daily mix tasks in archive.
 
 ## Install
