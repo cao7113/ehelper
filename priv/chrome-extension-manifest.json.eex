@@ -1,0 +1,6 @@
+{
+  "manifest_version": 3,
+  "name": "<%= @dirname %>",
+  "version": "1.0",
+  "description": ""
+}

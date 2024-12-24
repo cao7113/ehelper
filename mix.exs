@@ -2,6 +2,7 @@ defmodule Ehelper.MixProject do
   use Mix.Project
 
   @version "0.1.5"
+  @source_url "https://github.com/cao7113/ehelper"
 
   def project do
     [
@@ -12,9 +13,9 @@ defmodule Ehelper.MixProject do
       deps: deps(),
       aliases: aliases(),
       name: "ehelper",
-      description: "daily mix helper tasks",
-      source_url: "https://github.com/cao7113/ehelper",
-      homepage_url: "https://github.com/cao7113/ehelper",
+      description: "Daily mix helper tasks",
+      source_url: @source_url,
+      homepage_url: @source_url,
       package: package()
     ]
   end
@@ -48,7 +49,7 @@ defmodule Ehelper.MixProject do
       licenses: ["Apache-2.0"],
       maintainers: ["cao7113"],
       links: %{
-        "GitHub" => "https://github.com/cao7113/ehelper",
+        "GitHub" => @source_url,
         "Docs" => "https://hexdocs.pm/ehelper"
       }
       # files: ["lib", "mix.exs", "README.md"],

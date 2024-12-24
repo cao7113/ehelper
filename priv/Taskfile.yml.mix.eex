@@ -3,5 +3,6 @@ version: '3'
 tasks:
   default: mix test
   sh: iex --erl "-kernel shell_history enabled" -S mix
+  fmt: mix format
 
 # Generated at <%= DateTime.utc_now() %> by `mix eh.taskfile.mix` task

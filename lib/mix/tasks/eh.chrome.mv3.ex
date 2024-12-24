@@ -1,5 +1,5 @@
-defmodule Mix.Tasks.Eh.Readme do
-  @shortdoc "Gen README.md"
+defmodule Mix.Tasks.Eh.Chrome.Mv3 do
+  @shortdoc "Gen Chrome Extension V3 manifest.json"
 
   use Mix.Task
   import Mix.Generator
@@ -19,13 +19,17 @@ defmodule Mix.Tasks.Eh.Readme do
     {opts, args} = OptionParser.parse!(args, strict: @switches, aliases: @aliases)
 
     if args != [] do
-      Mix.raise("Expected \"mix eh.readme\" without arguments, got: #{inspect(args)}")
+      Mix.raise("Expected \"mix eh.chrome.mv3\" without arguments, got: #{inspect(args)}")
     end
 
-    # todo: hello-world => Hello World
     dirname = File.cwd!() |> Path.basename() |> String.capitalize()
 
-    copy_template(tmpl_file("README.md.eex"), "README.md", [dirname: dirname], opts)
+    copy_template(
+      tmpl_file("chrome-extension-manifest.json.eex"),
+      "manifest.json",
+      [dirname: dirname],
+      opts
+    )
   end
 
   def tmpl_file(priv_file) do
