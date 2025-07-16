@@ -5,6 +5,15 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v0.1.6](https://github.com/cao7113/ehelper/compare/v0.1.5...v0.1.6) (2025-07-16)
+
+
+
+
+### Bug Fixes:
+
+* typo and add eh.taskfile.phx by Ryn Cao
+
 ## [v0.1.5](https://github.com/cao7113/ehelper/compare/v0.1.4...v0.1.5) (2024-07-23)
 
 
