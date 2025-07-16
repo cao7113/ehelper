@@ -1,5 +1,5 @@
-defmodule Mix.Tasks.Eh.Taskfile.Mix do
-  @shortdoc "Gen Taskfile.yml for mix project"
+defmodule Mix.Tasks.Eh.Taskfile.Phx do
+  @shortdoc "Gen Taskfile.yml for phx project"
   use Mix.Task
 
   import Mix.Generator
@@ -19,10 +19,10 @@ defmodule Mix.Tasks.Eh.Taskfile.Mix do
     {opts, args} = OptionParser.parse!(args, strict: @switches, aliases: @aliases)
 
     if args != [] do
-      Mix.raise("Expected \"mix eh.taskfile.mix\" without arguments, got: #{inspect(args)}")
+      Mix.raise("Expected \"mix eh.taskfile.phx\" without arguments, got: #{inspect(args)}")
     end
 
-    copy_template(tmpl_file("Taskfile.yml.mix.eex"), "Taskfile.yml", [], opts)
+    copy_template(tmpl_file("Taskfile.yml.phx.eex"), "Taskfile.yml", [], opts)
   end
 
   def tmpl_file(priv_file) do

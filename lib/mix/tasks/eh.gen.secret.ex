@@ -10,7 +10,7 @@ defmodule Mix.Tasks.Eh.Gen.Secret do
 
   By default, mix eh.gen.secret generates a key 64 characters long.
 
-  The minimum value for `length` is 32.
+  The minimum value for `length` is 12.
   """
   use Mix.Task
 
@@ -26,11 +26,14 @@ defmodule Mix.Tasks.Eh.Gen.Secret do
     end
   end
 
-  defp random_string(length) when length > 31 do
-    :crypto.strong_rand_bytes(length) |> Base.encode64(padding: false) |> binary_part(0, length)
+  defp random_string(length) when length > 11 do
+    length
+    |> :crypto.strong_rand_bytes()
+    |> Base.encode64(padding: false)
+    |> binary_part(0, length)
   end
 
-  defp random_string(_), do: Mix.raise("The secret should be at least 32 characters long")
+  defp random_string(_), do: Mix.raise("The secret should be at least 12 bytes long")
 
   @spec invalid_args!() :: no_return()
   defp invalid_args! do

@@ -1,4 +1,4 @@
-defmodule Mix.Tasks.Eh.Readme do
+defmodule Mix.Tasks.Eh.Me do
   @shortdoc "Gen README.md"
 
   use Mix.Task

@@ -6,10 +6,10 @@ tasks:
 
   pub:
     desc: publish hex package
+    env:
+      HEX_API_KEY: $HEX_API_KEY
     cmds:
       - mix hex.publish --yes --replace
-    env:
-      # HEX_API_KEY: $HEX_API_KEY
   pub-docs: mix hex.publish docs --yes
 
   ## Git ops
