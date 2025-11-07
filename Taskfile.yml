@@ -1,9 +1,28 @@
 # https://taskfile.dev/usage/
 version: "3"
+vars:
+  # use .tool-versions file
+  elixirVersion: "1.19.2-otp-28"
+  erlangVersion: "28.1.1"
+
+  # 必须和livebook在相同的ip网络类型，如都是ipv6? ipv4?
+  # IPv4
+  NODE_HOST: 127.0.0.1
+  # IPv6 require erlang flag: -proto_dist inet6_tcp
+  NODE_HOST_V6: ::1
+  SHARED_COOKIE: runman
+
 tasks:
   default: mix test
   sh: iex --erl "-kernel shell_history enabled" -S mix
 
+  deps: |
+    mix do up + h.deps
+
+  build: |
+    mix build
+    ls -l _build/*.ez
+  up: mix up
   pub:
     desc: publish hex package
     env:
@@ -16,3 +35,120 @@ tasks:
   cmt: mix git_ops.release --yes && git push --follow-tags
   app-info: mix git_ops.project_info
   init-release: mix git_ops.release --initial
+
+  ## Legacy hello-elixir
+
+  rel: mix release --overwrite --force
+
+  # chmod +x run/**/*.exs
+  # chmod +x script/**/*.exs
+  # iex -S mix test test/hello_elixir_test.exs:6 -b
+  slow-test: mix test --slowest 10
+  stale-test: mix test --stale
+  # https://hexdocs.pm/mix/Mix.Tasks.Test.html#module-file-system-watchers
+  smart-test: fswatch lib test | mix test --listen-on-stdin --stale
+
+  # elixir distributed mode
+  a1:
+    env:
+      SITE: "a1"
+    cmds:
+      - |
+        iex --erl "-kernel shell_history enabled" --cookie {{.SHARED_COOKIE}} --name a1@{{.NODE_HOST}}
+  a1v6:
+    env:
+      SITE: "a1v6"
+    cmds:
+      - |
+        iex --erl "-kernel shell_history enabled -proto_dist inet6_tcp" --cookie  {{.SHARED_COOKIE}} --name a1v6@{{.NODE_HOST_V6}}
+  a2:
+    env:
+      SITE: "a2"
+    cmds:
+      - |
+        iex --erl "-kernel shell_history enabled" --cookie {{.SHARED_COOKIE}} --name a2@0.0.0.0
+  a3:
+    env:
+      SITE: "a3"
+    cmds:
+      - |
+        iex --erl "-kernel shell_history enabled" --cookie {{.SHARED_COOKIE}} --name a3@192.168.1.30
+  a4:
+    env:
+      SITE: "a4"
+    cmds:
+      - |
+        iex --erl "-kernel shell_history enabled" --cookie {{.SHARED_COOKIE}} --name a4@local.ip
+
+  # 必须相同的cookie才能连入node集群，erlang安全模型
+  # 测试中： livebook的notebook中的remote exectution smart-cell中cookie则不需要和livebook本身的cookie一致！
+  # 棒啊！ 但ip网络要一致，比如都是ipv4或ipv6，地址不能混淆吗？
+  b1:
+    env:
+      SITE: "b1"
+    cmds:
+      - |
+        iex --erl "-kernel shell_history enabled" --cookie bob --name b1@{{.NODE_HOST}}
+
+  s1:
+    env:
+      SITE: "slink1"
+    dir: ~/dev/elab/slink
+    cmds:
+      - |
+        iex --erl "-kernel shell_history enabled" --name s1@{{.NODE_HOST}} --cookie step -S mix
+  s1v6:
+    env:
+      SITE: "slink1-ipv6"
+    dir: ~/dev/elab/slink
+    cmds:
+      - |
+        iex --erl "-kernel shell_history enabled -proto_dist inet6_tcp" --name s1v6@{{.NODE_HOST_V6}} --cookie step -S mix
+
+  # todo connect docker orb.local
+
+  # 一端连接，另一端也就自动连接（双向的）
+  # require connect node before erpc
+  # iex(node2@127.0.0.1)4> Node.connect(:"node1@127.0.0.1")
+  # true
+  # iex(node2@127.0.0.1)5> Node.list
+  # [:"node1@127.0.0.1"]
+  # iex(node2@127.0.0.1)6> Node.self
+  # :"node2@127.0.0.1"
+  # iex(node2@127.0.0.1)7> Node.get_cookie
+  # :"test-cookie"
+  # iex(node2@127.0.0.1)8> System.fetch_env("SITE")
+  # {:ok, "node2"}
+  # iex(node2@127.0.0.1)9> :erpc.call(:"node1@127.0.0.1", System, :fetch_env, ["SITE"])
+  # {:ok, "node1"}
+
+  ## other archive install
+  phx.init: mix archive.install hex phx_new --force 
+  hex.init: mix local.hex --force --if-missing
+
+  ###################################################
+  #   Setup Env
+
+  install-direnv:
+    cmds:
+      - brew install direnv
+
+  version:
+    desc: "show elixir version"
+    cmds:
+      - elixir --version
+
+  install-asdf-elixir:
+    desc: "install elxir by asdf"
+    cmds:
+      - task: install-asdf-erlang
+      - asdf plugin elixir || true
+      - asdf install elixir {{.elixirVersion}}
+      - asdf local elixir {{.elixirVersion}}
+      - task: version
+
+  install-asdf-erlang:
+    desc: "install asdf erlang"
+    cmds:
+      - asdf plugin erlang || true
+      - asdf install erlang {{.erlangVersion}}

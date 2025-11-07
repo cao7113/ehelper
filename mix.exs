@@ -1,12 +1,13 @@
 defmodule Ehelper.MixProject do
   use Mix.Project
 
+  @app :ehelper
   @version "0.1.6"
   @source_url "https://github.com/cao7113/ehelper"
 
   def project do
     [
-      app: :ehelper,
+      app: @app,
       version: @version,
       elixir: "~> 1.17",
       start_permanent: Mix.env() == :prod,
@@ -31,14 +32,28 @@ defmodule Ehelper.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:ex_doc, "~> 0.34", only: :dev, runtime: false},
-      {:git_ops, "~> 2.6", only: [:dev], runtime: false}
+      # {:hello_libary, "~> 0.1.6"},
+      # todo improve here deps
+      # for used globally
+      # {:git_ops, "~> 2.9", only: [:dev], runtime: false},
+      {:git_ops, "~> 2.9"},
+      {:ex_doc, "~> 0.39", only: :dev, runtime: false}
     ]
   end
 
   defp aliases() do
     [
-      up: "cmd MIX_ENV=prod mix archive.install --force"
+      # install: ["archive.build -o hex.ez", "archive.install hex.ez --force"],
+      build: "archive.build -o _build/ehelper-#{@version}.ez",
+      install: "archive.install --force _build/ehelper-#{@version}.ez",
+      up: "do build + install"
+    ]
+  end
+
+  def cli do
+    [
+      # default_task: "eh",
+      preferred_envs: [build: :prod, install: :prod, up: :prod]
     ]
   end
 
