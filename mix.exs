@@ -24,8 +24,12 @@ defmodule Ehelper.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger, :inets, :ssl, :crypto],
-      mod: {Ehelper.Application, []}
+      extra_applications: [:logger],
+      mod: {Ehelper.Application, []},
+      env: [
+        # here config go into ebin/ehelper.app file, can be configured by config/*.exs
+        test: :test_value_from_mix_file_application_func_env_key
+      ]
     ]
   end
 
@@ -33,20 +37,19 @@ defmodule Ehelper.MixProject do
   defp deps do
     [
       # {:hello_libary, "~> 0.1.6"},
-      # todo improve here deps
-      # for used globally
-      # {:git_ops, "~> 2.9", only: [:dev], runtime: false},
-      {:git_ops, "~> 2.9"},
+      {:git_ops, "~> 2.9", only: [:dev], runtime: false},
       {:ex_doc, "~> 0.39", only: :dev, runtime: false}
     ]
   end
 
   defp aliases() do
     [
-      # install: ["archive.build -o hex.ez", "archive.install hex.ez --force"],
+      # install: ["archive.build -o _build/ehelper.ez", "archive.install _build/ehelper.ez --force"],
       build: "archive.build -o _build/ehelper-#{@version}.ez",
       install: "archive.install --force _build/ehelper-#{@version}.ez",
-      up: "do build + install"
+      up: "do build + install",
+      c: "compile",
+      hi: [&hello/1]
     ]
   end
 
@@ -70,4 +73,17 @@ defmodule Ehelper.MixProject do
       # files: ["lib", "mix.exs", "README.md"],
     ]
   end
+
+  defp hello(_) do
+    Mix.shell().info("Hello world")
+  end
+
+  # defp paid_task(_) do
+  #   Mix.Task.run("paid.task", [
+  #     "first_arg",
+  #     "second_arg",
+  #     "--license-key",
+  #     System.fetch_env!("SOME_LICENSE_KEY")
+  #   ])
+  # end
 end

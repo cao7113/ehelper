@@ -14,15 +14,6 @@ defmodule Ehelper.Factorial do
   end
 
   def pretty_factorial(n) do
-    factorial(n) |> pretty_number()
-  end
-
-  def pretty_number(n) do
-    n
-    |> to_string
-    |> String.to_charlist()
-    |> Enum.chunk_every(3)
-    |> Enum.map(&to_string/1)
-    |> Enum.join(", ")
+    factorial(n) |> Ehelper.pretty_number()
   end
 end

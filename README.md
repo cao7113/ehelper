@@ -8,11 +8,19 @@ Learning playground and daily tasks in erlang archive.
 
 - depend :hex app running?
 
+## Check ehelper archive in your project
+
+```
+# in mix.exs project/0
+
+archives: [{:ehelper, "~> 0.1"}]
+```
+
 ## Install
 
 ```bash
 mix archive.install hex ehelper --force
-mix eh
+mix h
 mix local
 
 ## locally install or update

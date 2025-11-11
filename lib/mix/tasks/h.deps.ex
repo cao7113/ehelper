@@ -1,11 +1,8 @@
 defmodule Mix.Tasks.H.Deps do
-  @shortdoc "Show project deps friendly"
-
-  use Mix.Task
-  alias Mix.Hex.DepInfo
+  @shortdoc "Show project deps info friendly"
 
   @moduledoc """
-  Show project dependencies in a user-friendly format.
+  #{@shortdoc}.
 
   Options:
   - filter: filter dependencies by name or description
@@ -14,6 +11,9 @@ defmodule Mix.Tasks.H.Deps do
   - full: display full information for each dependency
   - force: force fetching of dependency information
   """
+
+  use Mix.Task
+  alias Mix.DepInfo
 
   @switches [
     force: :boolean,
@@ -33,7 +33,7 @@ defmodule Mix.Tasks.H.Deps do
   @impl true
   def run(args) do
     Mix.Project.get!()
-    current_app = Mix.Project.config()[:app]
+    app = Mix.Project.config()[:app]
     {opts, _, _} = OptionParser.parse(args, strict: @switches, aliases: @aliases)
     all? = Keyword.get(opts, :all, false)
     full_info = Keyword.get(opts, :full, false)
@@ -89,7 +89,7 @@ defmodule Mix.Tasks.H.Deps do
       |> Enum.sort_by(& &1.app)
 
     shell = Mix.shell()
-    shell.info("## #{current_app} deps info\n")
+    shell.info("## #{app} deps info\n")
 
     info_opts = Keyword.take(opts, [:force])
 
@@ -105,7 +105,7 @@ defmodule Mix.Tasks.H.Deps do
         Ehelper.pp(dep)
       else
         info =
-          "##{idx} #{dep.app} (#{dep.latest_version})\n#{dep.desc}\n- Code: #{dep.links["GitHub"] || dep.links["github"]}\n- Docs: #{dep.docs_url || dep.links["Docs"] || dep.links["Changelog"]}\n- Pkg.: #{dep.pkg_url}\n- API.: #{dep.api_url}\n"
+          "##{idx + 1} #{dep.app} (#{dep.latest_version})\n#{dep.desc}\n- Code: #{DepInfo.github_url(dep)}\n- Docs: #{DepInfo.docs_url(dep)}\n- Pkg.: #{dep.pkg_url}\n- API.: #{dep.api_url}\n"
 
         shell.info(info)
       end

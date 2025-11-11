@@ -4,7 +4,7 @@ if config_env() == :dev do
   import_config("git_ops.exs")
 end
 
-# config :hello_elixir, :test_conf1, "conf value1"
+config :ehelper, :test, :test_value_from_config_file
 
 ## config logger app https://hexdocs.pm/logger/1.17.0/Logger.html#module-boot-configuration
 # config :logger,

@@ -1,6 +1,6 @@
 defmodule Ehelper.Process do
   @moduledoc """
-  Process helpers
+  Erlang Process Helpers
 
   - https://hexdocs.pm/elixir/Process.html
   - https://hexdocs.pm/elixir/GenServer.html#module-debugging-with-the-sys-module

@@ -1,8 +1,14 @@
-defmodule Mix.Tasks.H.Dep do
-  @shortdoc "Show dep info from hex.pm"
+defmodule Mix.Tasks.H.Dep.Meta do
+  @shortdoc "Show hex dep meta-info from hex.pm"
+  @moduledoc """
+  #{@shortdoc}.
+
+  This task fetches and displays dependency information from hex.pm.
+  """
+
   use Mix.Task
 
-  alias Mix.Hex.DepInfo
+  alias Mix.DepInfo
 
   @switches [
     force: :boolean
@@ -21,7 +27,7 @@ defmodule Mix.Tasks.H.Dep do
       if name do
         name |> String.trim()
       else
-        Mix.raise("invalid name: #{name}")
+        Mix.raise("Require dependency name!")
       end
 
     info = DepInfo.get_info(pkg, opts)

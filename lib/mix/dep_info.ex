@@ -1,4 +1,4 @@
-defmodule Mix.Hex.DepInfo do
+defmodule Mix.DepInfo do
   @moduledoc """
   Dep info
 
@@ -9,7 +9,19 @@ defmodule Mix.Hex.DepInfo do
   @compile {:no_warn_undefined, Hex}
   @compile {:no_warn_undefined, Hex.API.Package}
 
+  defstruct app: nil,
+            desc: "",
+            latest_version: nil,
+            links: %{},
+            docs_url: nil,
+            pkg_url: nil,
+            api_url: nil,
+            downloads: %{},
+            channel: nil
+
   def get_info(pkg, opts \\ []) do
+    pkg = pkg |> to_string()
+
     force_fetch = Keyword.get(opts, :force, false)
     cache_path = dep_cache_path(pkg)
 
@@ -38,8 +50,7 @@ defmodule Mix.Hex.DepInfo do
       end)
       |> Map.new()
 
-    # todo: defstruct?
-    %{
+    %__MODULE__{
       app: body.name,
       desc: body.meta["description"],
       latest_version: body.latest_version,
@@ -52,13 +63,21 @@ defmodule Mix.Hex.DepInfo do
     }
   end
 
+  def github_url(%__MODULE__{links: links}) do
+    links["GitHub"] || links["github"]
+  end
+
+  def docs_url(%__MODULE__{docs_url: docs_url, links: links}) do
+    docs_url || links["Docs"] || links["Changelog"]
+  end
+
   def dep_cache_path(name) when is_binary(name) do
     Path.join(dep_cache_root(), "#{name}.json")
   end
 
   def dep_cache_root(opts \\ []) do
     root =
-      System.get_env("EHELPER_DEP_INFO_ROOT", "~/.mix.deps.info")
+      System.get_env("MIX_DEP_INFO_ROOT", "~/dev/_repos/mix.deps.info")
       |> Path.expand()
 
     mk = Keyword.get(opts, :make_dir, true)

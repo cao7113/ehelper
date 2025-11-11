@@ -10,6 +10,8 @@ defmodule Ehelper.Application do
     children = [
       # Starts a worker by calling: Ehelper.Worker.start_link(arg)
       # {Ehelper.Worker, arg}
+      Ehelper.Pinger,
+      {Ehelper.Counter, 0}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
