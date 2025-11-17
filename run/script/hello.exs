@@ -2,3 +2,4 @@
 
 IO.puts("Hello Elixir!")
 IO.inspect(:erlang.process_info(self(), :current_function))
+IO.inspect(System.argv())

@@ -1,10 +1,9 @@
-defmodule Mix.Tasks.H.Deps.Meta do
-  @shortdoc "Summarize local deps hex-meta-info stats managed by ehelper"
+defmodule Mix.Tasks.H.Deps.Metas do
+  @shortdoc "Local cached deps meta-info stats managed by ehelper"
   @moduledoc """
   #{@shortdoc}.
 
   Options:
-  - filter: filter dependencies by name or description
   - force: force fetching of dependency information
   """
 
@@ -12,16 +11,10 @@ defmodule Mix.Tasks.H.Deps.Meta do
   alias Mix.DepInfo
 
   @switches [
-    force: :boolean,
-    all: :boolean,
-    full: :boolean,
-    filter: :string
+    force: :boolean
   ]
 
-  @aliases [
-    a: :all,
-    f: :full
-  ]
+  @aliases [f: :force]
 
   @impl true
   def run(args) do

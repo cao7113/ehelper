@@ -1,5 +1,17 @@
 defmodule Mix.Tasks.H do
   @shortdoc "List ehelper tasks"
+
+  @moduledoc """
+  #{@shortdoc}.
+
+  ## Example
+
+  mix h
+  mix h -h
+  mix h deps
+  mix h deps -s git
+  """
+
   use Mix.Task
 
   @impl true
@@ -9,37 +21,27 @@ defmodule Mix.Tasks.H do
       [] ->
         general()
 
-      ["-h"] ->
+      [a] when a in ["-h", "--help"] ->
         general()
 
-      ["--help"] ->
-        general()
+      [sub_task | rest] = _others ->
+        shell = Mix.shell()
+        # shell.info("# other args: #{others |> inspect}")
 
-      other ->
-        # todo bugy now!
-        {[], parsed_args, parsed_rest} =
-          OptionParser.parse(other, switches: [])
-
-        first = List.first(parsed_args)
-
-        if first do
-          [head | rest] = parsed_args
-          real_task = "h.#{head}"
-
-          parsed_rest = Enum.map(parsed_rest, fn {k, v} -> "#{k} #{v}" end)
-
-          final_args = rest ++ parsed_rest
-          Mix.shell().info("# Running task: mix #{real_task} #{Enum.join(final_args, " ")}")
-          Mix.Task.run(real_task, final_args)
+        if String.starts_with?(sub_task, "-") do
+          Mix.raise(
+            "first-arg should be sub-task like `deps` to access h.deps but is #{sub_task}"
+          )
         else
-          Mix.shell().error("Invalid arguments #{args |> inspect}, expected: mix h")
-          general()
+          real_task = "h.#{sub_task}"
+          shell.info("# Running task: mix #{real_task} #{rest |> inspect}")
+          Mix.Task.run(real_task, rest)
         end
     end
   end
 
   defp general() do
-    Mix.shell().info("## Ehelper tasks\n")
+    Mix.shell().info("## Ehelper tasks (h.<subtask> or h subtask)\n")
     Mix.Tasks.Help.run(["--search", "h."])
   end
 end

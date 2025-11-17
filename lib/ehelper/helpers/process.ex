@@ -117,7 +117,7 @@ defmodule Ehelper.Process do
     end
   end
 
-  def mailbox(pid) when is_pid(pid), do: message_queue(pid)
+  def msgbox(pid) when is_pid(pid), do: message_queue(pid)
 
   def pids(pid) do
     [
@@ -126,7 +126,7 @@ defmodule Ehelper.Process do
       links: Process.info(pid, :links) |> elem(1),
       registered_name: Process.info(pid, :registered_name) |> elem(1),
       group_leader: Process.info(pid, :group_leader) |> elem(1),
-      monitors: Process.info(pid, :monitors) |> elem(1),
+      monitors: Process.info(pid, :monitors) |> elem(1) |> Enum.uniq(),
       monitored_by: Process.info(pid, :monitored_by) |> elem(1)
     ]
   end
@@ -145,6 +145,8 @@ defmodule Ehelper.Process do
   def reductions(pid), do: Process.info(pid, :reductions) |> elem(1)
 
   def dict(pid) do
+    pid = pid(pid)
+
     case Process.info(pid, :dictionary) do
       {:dictionary, dict} -> dict
       _ -> []
@@ -160,11 +162,12 @@ defmodule Ehelper.Process do
   @doc """
   Get process id
   iex also support: pid(0, 21, 32)
+
+  GenServer.whereis(aGenServer)
   """
   def pid(pid) when is_pid(pid), do: pid
   def pid(name) when is_atom(name), do: Process.whereis(name)
-  # GenServer.whereis(aGenServer)
-
+  def pid(n) when is_integer(n), do: pid("#PID<0.#{n}.0>")
   def pid("#PID<" <> pstr), do: pstr |> String.trim_trailing(">") |> pid()
   def pid("PID<" <> pstr), do: pstr |> String.trim_trailing(">") |> pid()
   def pid("<" <> pstr), do: pstr |> String.trim_trailing(">") |> pid()

@@ -1,42 +1,43 @@
 defmodule Mix.Tasks.H.Gen.Secret do
-  @shortdoc "Generates a secret"
+  @shortdoc "Generates random secret with specified length"
+  @default_length 64
+  @min_length 15
 
   @moduledoc """
-  Copied from https://github.com/phoenixframework/phoenix/blob/main/lib/mix/tasks/phx.gen.secret.ex
+  #{@shortdoc}.
 
-  Generates a secret and prints it to the terminal.
+      $ mix h.gen.secret --length #{@default_length}
 
-      $ mix h.gen.secret [length]
+  By default, mix h.gen.secret generates a key `64` characters long.
 
-  By default, mix h.gen.secret generates a key 64 characters long.
+  The minimum value for `length` is `#{@min_length}` unless force request!
 
-  The minimum value for `length` is 12.
+  ## Links(based on Plug.Crypto)
+    - https://hexdocs.pm/plug_crypto/Plug.Crypto.html
+    - https://github.com/phoenixframework/phoenix/blob/main/lib/mix/tasks/phx.gen.secret.ex
+    - https://github.com/phoenixframework/phoenix/blob/main/lib/phoenix/token.ex
   """
+
   use Mix.Task
 
-  @doc false
-  def run([]), do: run(["64"])
-  def run([int]), do: int |> parse!() |> random_string() |> Mix.shell().info()
-  def run([_ | _]), do: invalid_args!()
+  @switches [length: :integer]
+  @aliases [l: :length]
 
-  defp parse!(int) do
-    case Integer.parse(int) do
-      {int, ""} -> int
-      _ -> invalid_args!()
-    end
+  def run(args) do
+    {opts, _args} = OptionParser.parse_head!(args, strict: @switches, aliases: @aliases)
+    length = Keyword.get(opts, :length, @default_length)
+
+    random_string(length)
+    |> Mix.shell().info()
   end
 
-  defp random_string(length) when length > 11 do
+  defp random_string(length) when length >= @min_length do
     length
     |> :crypto.strong_rand_bytes()
-    |> Base.encode64(padding: false)
+    # |> Base.encode64(padding: false)
+    |> Base.url_encode64(padding: false)
     |> binary_part(0, length)
   end
 
   defp random_string(_), do: Mix.raise("The secret should be at least 12 bytes long")
-
-  @spec invalid_args!() :: no_return()
-  defp invalid_args! do
-    Mix.raise("mix h.gen.secret expects a length as integer or no argument at all")
-  end
 end

@@ -11,11 +11,13 @@ defmodule Mix.Tasks.H.Dep.Meta do
   alias Mix.DepInfo
 
   @switches [
-    force: :boolean
+    force: :boolean,
+    file_cache: :boolean
   ]
 
   @aliases [
-    f: :force
+    f: :force,
+    c: :file_cache
   ]
 
   @impl true

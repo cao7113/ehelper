@@ -1,4 +1,4 @@
-defmodule Mix.Tasks.H.Just do
+defmodule Mix.Tasks.H.Justfile do
   @shortdoc "Gen Justfile as https://just.systems/man/en/"
 
   use Mix.Task

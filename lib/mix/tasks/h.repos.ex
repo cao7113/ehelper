@@ -5,7 +5,6 @@ defmodule Mix.Tasks.H.Repos do
   #{@shortdoc}.
 
   Options:
-  - filter: filter dependencies by name or description
   - force: force fetching of dependency information
   """
 
@@ -13,15 +12,11 @@ defmodule Mix.Tasks.H.Repos do
   alias Mix.RepoInfo
 
   @switches [
-    force: :boolean,
-    all: :boolean,
-    full: :boolean,
-    filter: :string
+    force: :boolean
   ]
 
   @aliases [
-    a: :all,
-    f: :full
+    f: :force
   ]
 
   @impl true

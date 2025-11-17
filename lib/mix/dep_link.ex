@@ -5,7 +5,7 @@ defmodule Mix.DepLink do
 
   alias Mix.RepoInfo
 
-  @default_link_root "deps/_links"
+  @default_link_root "deps"
   @default_link_suffix ""
 
   def hi, do: :hi

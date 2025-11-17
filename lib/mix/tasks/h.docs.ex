@@ -4,11 +4,7 @@ defmodule Mix.Tasks.H.Docs do
   use Mix.Task
 
   @moduledoc """
-  Summarize local deps info managed by ehelper.
-
-  Options:
-  - filter: filter dependencies by name or description
-  - force: force fetching of dependency information
+  #{@shortdoc}.
   """
 
   @switches []

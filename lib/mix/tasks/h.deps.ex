@@ -5,8 +5,8 @@ defmodule Mix.Tasks.H.Deps do
   #{@shortdoc}.
 
   Options:
-  - filter: filter dependencies by name or description
-  - current_env: load dependencies for the current environment and target
+  - search: search dependencies by name or description
+  - env_and_target: load dependencies for the current environment and target
   - all: include all dependencies, not just top-level ones
   - full: display full information for each dependency
   - force: force fetching of dependency information
@@ -17,17 +17,18 @@ defmodule Mix.Tasks.H.Deps do
 
   @switches [
     force: :boolean,
-    current_env: :boolean,
+    env_and_target: :boolean,
     all: :boolean,
     full: :boolean,
-    filter: :string
+    search: :string
   ]
 
   @aliases [
     # f: :force,
-    c: :current_env,
+    e: :env_and_target,
     a: :all,
-    f: :full
+    f: :full,
+    s: :search
   ]
 
   @impl true
@@ -37,16 +38,13 @@ defmodule Mix.Tasks.H.Deps do
     {opts, _, _} = OptionParser.parse(args, strict: @switches, aliases: @aliases)
     all? = Keyword.get(opts, :all, false)
     full_info = Keyword.get(opts, :full, false)
-    loaded_opts = if opts[:current_env], do: [env: Mix.env(), target: Mix.target()], else: []
-    filter = Keyword.get(opts, :filter, nil)
+    loaded_opts = if opts[:env_and_target], do: [env: Mix.env(), target: Mix.target()], else: []
+    search = Keyword.get(opts, :search, nil)
 
     pkgs =
       Mix.Dep.Converger.converge(loaded_opts)
       |> Enum.reduce([], fn dep, acc ->
         %Mix.Dep{
-          # manager: :mix,
-          # scm: Hex.SCM,
-          # status: {:ok, "1.4.44"},
           top_level: top_level,
           opts: opts,
           app: app
@@ -64,8 +62,8 @@ defmodule Mix.Tasks.H.Deps do
           vsn = Map.get(app_props, :vsn, "unknown") |> to_string()
 
           should_include =
-            if filter do
-              String.contains?(desc, filter) or String.contains?(app, filter)
+            if search do
+              String.contains?(desc, search) or String.contains?(app, search)
             else
               true
             end
@@ -104,12 +102,14 @@ defmodule Mix.Tasks.H.Deps do
       if full_info do
         Ehelper.pp(dep)
       else
-        info =
-          "##{idx + 1} #{dep.app} (#{dep.latest_version})\n#{dep.desc}\n- Code: #{DepInfo.github_url(dep)}\n- Docs: #{DepInfo.docs_url(dep)}\n- Pkg.: #{dep.pkg_url}\n- API.: #{dep.api_url}\n"
-
+        info = get_dep_doc(dep, idx)
         shell.info(info)
       end
     end)
+  end
+
+  def get_dep_doc(%DepInfo{} = dep, idx) do
+    "##{idx + 1} #{dep.app} (#{dep.latest_version})\n#{dep.desc}\n- Docs: #{DepInfo.docs_url(dep)}\n- Code: #{DepInfo.github_url(dep)}\n- Pkg.: #{dep.pkg_url}\n- API.: #{dep.api_url}\n"
   end
 
   # %Mix.Dep{

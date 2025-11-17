@@ -17,7 +17,8 @@ defmodule Mix.DepInfo do
             pkg_url: nil,
             api_url: nil,
             downloads: %{},
-            channel: nil
+            channel: nil,
+            cache_path: nil
 
   def get_info(pkg, opts \\ []) do
     pkg = pkg |> to_string()
@@ -37,9 +38,18 @@ defmodule Mix.DepInfo do
         Application.ensure_all_started(:hex)
 
         {:ok, {200, _headers, body}} = Hex.API.Package.get(nil, pkg, nil)
-        File.write!(cache_path, JSON.encode!(body))
+
+        file_cache = Keyword.get(opts, :file_cache, true)
+
+        if file_cache do
+          File.write!(cache_path, JSON.encode!(body))
+        else
+          IO.puts("## [#{pkg}] not cached in path: #{cache_path}")
+          {:fetched, body}
+        end
+
         du = DateTime.diff(DateTime.utc_now(), start, :millisecond)
-        IO.puts("# [#{pkg}] loaded pkg info taken: #{du} ms")
+        IO.puts("# [#{pkg}] fetched pkg info taken: #{du} ms")
         {:fetched, body}
       end
 
@@ -59,7 +69,8 @@ defmodule Mix.DepInfo do
       pkg_url: body.html_url,
       api_url: body.url,
       downloads: body.downloads,
-      channel: channel
+      channel: channel,
+      cache_path: cache_path
     }
   end
 

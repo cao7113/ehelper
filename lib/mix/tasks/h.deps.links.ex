@@ -31,12 +31,11 @@ defmodule Mix.Tasks.H.Deps.Links do
   @impl true
   def run(args) do
     {opts, _args, _error} = OptionParser.parse(args, switches: @switches, aliases: @aliases)
-    links_pattern = DepLink.get_links_pattern(opts)
 
-    # Path.wildcard(Path.join(link_root, patten))
-    # |> Ehelper.pp()
+    links_root = DepLink.get_link_root(opts)
+    cmd = "find #{links_root} -type l -depth 1 -exec ls -l {} \\;"
 
-    System.shell("ls -al #{links_pattern} 2>/dev/null")
+    System.shell(cmd)
     |> case do
       {msg, 0} -> IO.puts(msg)
       {"", 1} -> IO.puts("No dep links")

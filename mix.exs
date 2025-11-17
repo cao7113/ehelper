@@ -11,7 +11,8 @@ defmodule Ehelper.MixProject do
       version: @version,
       elixir: "~> 1.17",
       start_permanent: Mix.env() == :prod,
-      deps: deps(),
+      deps: deps_with_linking_path(),
+      # deps: deps(),
       aliases: aliases(),
       name: "ehelper",
       description: "Daily mix helper tasks",
@@ -37,9 +38,34 @@ defmodule Ehelper.MixProject do
   defp deps do
     [
       # {:hello_libary, "~> 0.1.6"},
-      {:git_ops, "~> 2.9", only: [:dev], runtime: false},
+      {:git_ops, "~> 2.9", only: [:dev], runtime: false, local_linking: true},
       {:ex_doc, "~> 0.39", only: :dev, runtime: false}
     ]
+  end
+
+  ## Support deps local-linking
+  def raw_deps, do: deps()
+
+  def deps_with_linking_path(deps \\ deps()) do
+    # Mix.Local.append_archives()
+    # paths = :code.get_path() |> Enum.sort(); paths|>dbg
+
+    Mix.DepLink
+    |> Code.ensure_loaded()
+    |> case do
+      {:module, _} ->
+        deps
+        |> Mix.DepLink.deps_with_local_linking()
+
+      {:error, reason} ->
+        if Mix.env() in [:dev, :test] do
+          Mix.shell().error(
+            "Not found Mix.DepLink because: #{reason |> inspect}, please run: mix archive.install hex ehelper first!"
+          )
+        else
+          :ok
+        end
+    end
   end
 
   defp aliases() do

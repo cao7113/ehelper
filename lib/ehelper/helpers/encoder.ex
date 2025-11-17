@@ -1,4 +1,4 @@
-defmodule Ehelper.Coder do
+defmodule Ehelper.Encoder do
   @moduledoc """
   Encoding and decoding helpers
 

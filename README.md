@@ -4,9 +4,7 @@
 [![Release](https://github.com/cao7113/ehelper/actions/workflows/release.yml/badge.svg)](https://github.com/cao7113/ehelper/actions/workflows/release.yml)
 [![Hex](https://img.shields.io/hexpm/v/ehelper)](https://hex.pm/packages/ehelper)
 
-Learning playground and daily tasks in erlang archive.
-
-- depend :hex app running?
+Elixir/Erlang daily helpers and learning playground.
 
 ## Check ehelper archive in your project
 
@@ -26,3 +24,7 @@ mix local
 ## locally install or update
 mix up
 ```
+
+## Similar projects
+
+- https://github.com/membraneframework/bunch
