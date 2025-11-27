@@ -11,7 +11,7 @@ Elixir/Erlang daily helpers and learning playground.
 ```
 # in mix.exs project/0
 
-archives: [{:ehelper, "~> 0.1"}]
+archives: [{:ehelper, "~> 0.2"}]
 ```
 
 ## Install
