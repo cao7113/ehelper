@@ -118,8 +118,11 @@ defmodule Ehelper do
 
   def sup, do: Process.whereis(Ehelper.Supervisor)
 
-  def as_pid(pid), do: Ehelper.Process.pid(pid)
+  # utils
+  def as_pid(pid), do: Ehelper.Proc.pid(pid)
   def to_pid(pid), do: as_pid(pid)
+  def pid_from(pid), do: as_pid(pid)
+  def pstate(pid), do: Ehelper.Proc.state(pid)
 
   ## Utils
 
@@ -145,7 +148,7 @@ defmodule Ehelper do
   def pp(info, opts \\ []) do
     info |> IO.inspect(limit: :infinity)
 
-    if Keyword.get(opts, nil, true) do
+    if Keyword.get(opts, :return_nil, true) do
       nil
     else
       info

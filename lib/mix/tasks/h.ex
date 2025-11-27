@@ -24,17 +24,14 @@ defmodule Mix.Tasks.H do
       [a] when a in ["-h", "--help"] ->
         general()
 
-      [sub_task | rest] = _others ->
-        shell = Mix.shell()
-        # shell.info("# other args: #{others |> inspect}")
-
+      [sub_task | rest] ->
         if String.starts_with?(sub_task, "-") do
           Mix.raise(
             "first-arg should be sub-task like `deps` to access h.deps but is #{sub_task}"
           )
         else
           real_task = "h.#{sub_task}"
-          shell.info("# Running task: mix #{real_task} #{rest |> inspect}")
+          # Mix.shell().info("# Running task: mix #{real_task} #{rest |> inspect}")
           Mix.Task.run(real_task, rest)
         end
     end

@@ -68,7 +68,7 @@ defmodule PrimeNumberTest do
       assert [2, 2, 2] == prime_factors_for(8)
     end
 
-    @tag :manual
+    @tag :try
     test "big number" do
       items = [2, 2, 3, 3, 3, 19, 19, 461, 10463, 16493]
 

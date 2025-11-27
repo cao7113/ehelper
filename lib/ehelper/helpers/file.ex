@@ -8,6 +8,14 @@ defmodule Ehelper.File do
 
   require Logger
 
+  def is_link?(path) do
+    File.lstat(path)
+    |> case do
+      {:ok, %File.Stat{type: :symlink}} -> true
+      _ -> false
+    end
+  end
+
   def du_ksize(path) do
     # System.cmd("du", ["-hs", path])
     {info, 0} = System.shell("du -sk #{path}")

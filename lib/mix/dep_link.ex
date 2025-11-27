@@ -14,38 +14,40 @@ defmodule Mix.DepLink do
   Link dep to a local repo code
   """
   def link_repo(pkg, opts \\ []) do
-    {pkg, opts} |> dbg
     link_target = get_link_target(pkg, opts)
-    clone_info = RepoInfo.clone_repo(pkg, opts)
+    repo_info = RepoInfo.clone_repo(pkg, opts)
 
-    clone_info
+    repo_info
     |> case do
       %{
         status: :ok,
         pkg: pkg,
         repo_path: repo_path
       } ->
-        if File.exists?(link_target) do
-          %{
-            kind: :already_existed
-          }
-        else
-          {repo_path, File.exists?(repo_path)} |> dbg
-          File.ln_s!(repo_path, link_target)
+        {link?, kind} =
+          if File.exists?(link_target) do
+            if Ehelper.File.is_link?(link_target) do
+              {false, :already_existed}
+            else
+              File.rm_rf!(link_target)
+              {true, :linked_and_replace}
+            end
+          else
+            {true, :linked}
+          end
 
-          %{
-            kind: :linked
-          }
-        end
-        |> Map.merge(%{
+        link? && File.ln_s!(repo_path, link_target)
+
+        %{
+          kind: kind,
           status: :ok,
           pkg: pkg,
           link_target: link_target,
           repo_path: repo_path
-        })
+        }
 
       _ ->
-        clone_info
+        repo_info
         |> Map.put(:kind, :clone_repo_failed)
     end
   end

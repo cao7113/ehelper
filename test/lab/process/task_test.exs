@@ -1,7 +1,7 @@
 defmodule TaskTest do
   use ExUnit.Case
 
-  @moduletag :manual
+  @moduletag :try
 
   test "async and await" do
     t =

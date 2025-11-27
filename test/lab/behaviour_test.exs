@@ -42,3 +42,23 @@ defmodule ParserTest do
     assert {:ok, "some yaml ok"} = YAMLParser.parse("ok")
   end
 end
+
+defmodule Ehelper.Behave do
+  @moduledoc """
+  Demo behavior
+
+  iex> b H.Behave
+  """
+
+  @type t() :: atom()
+
+  @callback hi() :: binary() | term()
+end
+
+defmodule Ehelper.Behaver do
+  defstruct msg: nil
+
+  @behaviour Ehelper.Behave
+
+  def hi, do: "hello"
+end

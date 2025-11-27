@@ -3,7 +3,7 @@ defmodule LoggerTest do
 
   import Logger
 
-  @tag :manual
+  @tag :try
   test "logger level" do
     # Note: all those methods are macros
     info("this is info message")

@@ -3,7 +3,6 @@ defmodule FuncTest do
 
   # iex --dbg pry -S mix test test/lab/func_test.exs --trace -b
   test "_ special underscore to ignore something" do
-    # 1 |> dbg
     assert get_chain("a", nil) == "just-a"
     assert get_chain("b") == "just-b"
 

@@ -6,9 +6,8 @@ defmodule Mix.Tasks.H.Deps do
 
   Options:
   - search: search dependencies by name or description
-  - env_and_target: load dependencies for the current environment and target
-  - all: include all dependencies, not just top-level ones
-  - full: display full information for each dependency
+  - env-target: load dependencies for the current environment and target
+  - top-only: include top-level only deps
   - force: force fetching of dependency information
   """
 
@@ -17,29 +16,28 @@ defmodule Mix.Tasks.H.Deps do
 
   @switches [
     force: :boolean,
-    env_and_target: :boolean,
-    all: :boolean,
-    full: :boolean,
+    env_target: :boolean,
+    top_only: :boolean,
     search: :string
   ]
 
   @aliases [
-    # f: :force,
-    e: :env_and_target,
-    a: :all,
-    f: :full,
+    f: :force,
+    e: :env_target,
+    t: :top_only,
     s: :search
   ]
 
   @impl true
   def run(args) do
     Mix.Project.get!()
-    app = Mix.Project.config()[:app]
-    {opts, _, _} = OptionParser.parse(args, strict: @switches, aliases: @aliases)
-    all? = Keyword.get(opts, :all, false)
-    full_info = Keyword.get(opts, :full, false)
-    loaded_opts = if opts[:env_and_target], do: [env: Mix.env(), target: Mix.target()], else: []
+
+    {opts, _} = OptionParser.parse!(args, strict: @switches, aliases: @aliases)
+    loaded_opts = if opts[:env_target], do: [env: Mix.env(), target: Mix.target()], else: []
     search = Keyword.get(opts, :search, nil)
+    top_only = Keyword.get(opts, :top_only, true)
+
+    app = Mix.Project.config()[:app]
 
     pkgs =
       Mix.Dep.Converger.converge(loaded_opts)
@@ -50,36 +48,39 @@ defmodule Mix.Tasks.H.Deps do
           app: app
         } = dep
 
-        if all? or top_level do
-          app_props =
-            opts
-            |> Keyword.get(:app_properties, [])
-            |> Keyword.take([:vsn, :description])
-            |> Map.new()
+        app_props =
+          opts
+          |> Keyword.get(:app_properties, [])
+          |> Keyword.take([:vsn, :description])
+          |> Map.new()
 
-          app = app |> to_string()
-          desc = Map.get(app_props, :description, "no description") |> to_string()
-          vsn = Map.get(app_props, :vsn, "unknown") |> to_string()
+        app = app |> to_string()
+        desc = Map.get(app_props, :description, "no description") |> to_string()
+        vsn = Map.get(app_props, :vsn, "unknown") |> to_string()
 
-          should_include =
-            if search do
-              String.contains?(desc, search) or String.contains?(app, search)
-            else
-              true
-            end
-
-          if should_include do
-            item = %{
-              app: app,
-              desc: desc,
-              vsn: vsn,
-              top_level: top_level
-            }
-
-            acc ++ [item]
+        should_include =
+          if top_only do
+            top_level
           else
-            acc
+            true
           end
+
+        should_include =
+          if search do
+            (String.contains?(desc, search) || String.contains?(app, search)) && should_include
+          else
+            should_include
+          end
+
+        if should_include do
+          item = %{
+            app: app,
+            desc: desc,
+            vsn: vsn,
+            top_level: top_level
+          }
+
+          acc ++ [item]
         else
           acc
         end
@@ -99,12 +100,8 @@ defmodule Mix.Tasks.H.Deps do
     end)
     |> Task.await_many()
     |> Enum.with_index(fn dep, idx ->
-      if full_info do
-        Ehelper.pp(dep)
-      else
-        info = get_dep_doc(dep, idx)
-        shell.info(info)
-      end
+      info = get_dep_doc(dep, idx)
+      shell.info(info)
     end)
   end
 
@@ -113,20 +110,15 @@ defmodule Mix.Tasks.H.Deps do
   end
 
   # %Mix.Dep{
-  #   # requirement: nil,
-  #   # extra: extra,
-  #   # from: nil,
-  #   # system_env: [],
-  #   # :mix
-  #   # manager: manager,
-  #   # scm: Hex.SCM,
-  #   # scm: scm,
-  #   # deps: [],
-  #   top_level: top_level,
-  #   # {:ok, "1.4.44"}
-  #   # status: status,
-  #   # [app_properties: [vsn: ~c""], description: ~c""]
-  #   opts: opts,
+  #   requirement: nil,
+  #   extra: [],
+  #   from: nil,
+  #   system_env: [],
+  #   manager: :mix,
+  #   deps: [],
+  #   top_level: true,
+  #   status: {:ok, "1.4.44"},
+  #   opts: [app_properties: [vsn: ~c""], description: ~c""],
   #   app: app
   # }
 end

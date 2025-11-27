@@ -27,7 +27,7 @@ end
 defmodule ParallelMapTest do
   use ExUnit.Case
 
-  @moduletag :manual
+  @moduletag :try
 
   test "p-map" do
     result =

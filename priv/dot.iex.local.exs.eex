@@ -16,11 +16,11 @@ if Code.ensure_loaded?(Mix) do
 
   # :code.get_path()|> Enum.map(&to_string/1)|> Enum.sort()
   Ehelper.start!()
-  import_if_available Ehelper.Iex
 else
   raise "Mix not loaded"
 end
 
 # Eh.hi
 alias Ehelper, as: Eh
-# alias Ehelper, as: H
+alias Ehelper, as: H
+import_if_available Ehelper.Iex

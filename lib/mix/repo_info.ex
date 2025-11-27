@@ -6,7 +6,7 @@ defmodule Mix.RepoInfo do
   alias Mix.DepInfo
 
   def clone_repo(pkg, opts \\ []) do
-    pkg = pkg|> to_string
+    pkg = pkg |> to_string
     repo_path = local_repo_path(pkg, [])
     hub_url = get_github_url(pkg, [])
     depth = Keyword.get(opts, :depth, 20)
@@ -51,9 +51,7 @@ defmodule Mix.RepoInfo do
   end
 
   def local_repo_path(name, opts \\ []) do
-    {name, opts}|>dbg
     root = local_repos_root(opts)
-    {root, name}|>dbg
     Path.join(root, name)
   end
 

@@ -4,6 +4,9 @@ defmodule Ehelper.Encoder do
 
   bianry integer
   # 0b0100 #=> 4
+
+  #iex>  123 |> dbg(base: :binary)
+  #iex>  # 123 #=> 0b1111011
   """
 
   # 258 |> :binary.encode_unsigned() |> :crypto.bytes_to_integer

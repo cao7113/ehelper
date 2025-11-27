@@ -1,6 +1,6 @@
 defmodule Process.BaseTest do
   use ExUnit.Case
-  @moduletag :manual
+  @moduletag :try
 
   defmodule Listener do
     def start do

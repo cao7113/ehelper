@@ -1,1 +1,1 @@
-ExUnit.start(exclude: [manual: true, external: true])
+ExUnit.start(exclude: [try: true, manual: true, external: true])

@@ -6,6 +6,7 @@ defmodule Ehelper.Iex do
   iex> ri   # runtime_info
   iex> rc   # recompile
   iex> pp <large_obj>
+  iex> cwd
   """
 
   defdelegate rc(options \\ []), to: IEx.Helpers, as: :recompile
@@ -17,15 +18,16 @@ defmodule Ehelper.Iex do
   @runtime_topics [:system, :memory, :limits, :applications, :allocators]
   def runtime_topics, do: @runtime_topics
   def apps, do: IEx.Helpers.runtime_info(:applications)
+
+  # iex>  pinfo H.Counter
+  def pinfo(pid), do: Ehelper.Proc.info(pid)
+  def pstate(pid), do: Ehelper.Proc.state(pid)
+  defdelegate pstatus(pid), to: Ehelper.Proc, as: :status
+  def dict(pid), do: Ehelper.Proc.dict(pid)
+  def mailbox(pid), do: Ehelper.Proc.mailbox(pid)
+  def msgbox(pid), do: Ehelper.Proc.msgbox(pid)
+
   def cwd, do: IEx.Helpers.pwd()
-  def dict(pid), do: Ehelper.Process.dict(pid)
-  def msgbox(pid), do: Ehelper.Process.msgbox(pid)
-
-  @doc """
-  iex> process_info self() # from IEx.Helpers
-  """
-  def pinfo(pid), do: Ehelper.Process.pinfo(pid)
-
   def pp(o), do: Ehelper.pp(o)
 
   @doc """
@@ -50,6 +52,10 @@ defmodule Ehelper.Iex do
     |> Enum.into(%{}, fn m ->
       {m, Process.whereis(m)}
     end)
+    |> Map.merge(%{
+      evalator: iex_elevator_pid(),
+      server: iex_server_pid()
+    })
   end
 
   def iex_elevator_pid do

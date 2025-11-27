@@ -8,9 +8,9 @@ defmodule TryTest do
     {:ok, Map.put(context, :info1, "shared-info-from-callback")}
   end
 
-  # mix test test/try_test.exs --include manual
+  # mix test test/try_test.exs --include try
   # tag register info into context for used in callback
-  @tag :manual
+  @tag :try
   @tag :capture_log
   test "context shared info between callbacks and tests", ctx = %{info1: info1} do
     IO.inspect(ctx, label: "context info")
