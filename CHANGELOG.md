@@ -5,6 +5,15 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v0.2.1](https://github.com/cao7113/ehelper/compare/v0.2.0...v0.2.1) (2025-11-27)
+
+
+
+
+### Bug Fixes:
+
+* readme by Ryn Cao
+
 ## [v0.2.0](https://github.com/cao7113/ehelper/compare/v0.1.6...v0.2.0) (2025-11-27)
 
 
