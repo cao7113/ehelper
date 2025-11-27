@@ -5,6 +5,19 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v0.2.0](https://github.com/cao7113/ehelper/compare/v0.1.6...v0.2.0) (2025-11-27)
+
+
+
+
+### Features:
+
+* add dep link by Ryn Cao
+
+### Bug Fixes:
+
+* improve h and h.deps.links task by Ryn Cao
+
 ## [v0.1.6](https://github.com/cao7113/ehelper/compare/v0.1.5...v0.1.6) (2025-07-16)
 
 
