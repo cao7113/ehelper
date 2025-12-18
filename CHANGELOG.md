@@ -5,6 +5,15 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v0.2.2](https://github.com/cao7113/ehelper/compare/v0.2.1...v0.2.2) (2025-12-18)
+
+
+
+
+### Bug Fixes:
+
+* mix h.cget task based on httpc by Ryn Cao
+
 ## [v0.2.1](https://github.com/cao7113/ehelper/compare/v0.2.0...v0.2.1) (2025-11-27)
 
 

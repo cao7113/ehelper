@@ -33,9 +33,9 @@ tasks:
   pub-docs: mix hex.publish docs --yes
 
   ## Git ops
-  cmt: mix git_ops.release --yes && git push --follow-tags
-  app-info: mix git_ops.project_info
-  init-release: mix git_ops.release --initial
+  ops.up: mix git_ops.release --yes && git push --follow-tags
+  prj.info: mix git_ops.project_info
+  ops.init: mix git_ops.release --initial
 
   ## Legacy hello-elixir
 
