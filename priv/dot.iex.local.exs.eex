@@ -3,18 +3,16 @@
 # https://hexdocs.pm/iex/IEx.html#module-configuring-the-shell
 
 if Code.ensure_loaded?(Mix) do
-  # if in Mix available
-  # Mix.Local.append_archives()
-  ## Add ehelper into beam code path
-  Mix.path_for(:archives)
-  |> Path.join("ehelper*/ehelper*")
-  |> Path.wildcard()
-  |> Enum.map(fn p ->
-      ebin_path = Path.join(p, "ebin")
-      Code.append_path(ebin_path, cache: true)
-  end)
+  ## Add ehelper into beam code path, check by :code.get_path()
+  Mix.Local.append_archives()
+  # Mix.path_for(:archives)
+  # |> Path.join("ehelper*/ehelper*")
+  # |> Path.wildcard()
+  # |> Enum.map(fn p ->
+  #     ebin_path = Path.join(p, "ebin")
+  #     Code.append_path(ebin_path, cache: true)
+  # end)
 
-  # :code.get_path()|> Enum.map(&to_string/1)|> Enum.sort()
   Ehelper.start!()
 else
   raise "Mix not loaded"
@@ -22,5 +20,5 @@ end
 
 # Eh.hi
 alias Ehelper, as: Eh
-alias Ehelper, as: H
+# alias Ehelper, as: H
 import_if_available Ehelper.Iex

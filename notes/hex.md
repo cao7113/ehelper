@@ -47,10 +47,7 @@ Mix.Local.append_archives(); Ehelper.hi
 
 iex(2)> Application.started_applications |> Enum.map( & elem(&1, 0) )|> Enum.sort
 [:asn1, :bander, :bandit, :compiler, :crypto, :eex, :elixir, :finch, :fss, :hex,
- :hpax, :iex, :inets, :jason, :kernel, :kino, :kino_vega_lite, :logger, :mime,
- :mint, :mint_web_socket, :mix, :nimble_options, :nimble_pool, :plug,
- :plug_crypto, :public_key, :req, :ssl, :stdlib, :table, :telemetry,
- :thousand_island, :vega_lite, :websock, :websock_adapter]
+ :hpax, :iex, :inets, :jason, :websock, :websock_adapter]
 
  iex(1)> Application.started_applications |> Enum.map( & elem(&1, 0) )|> Enum.sort
 [:compiler, :elixir, :iex, :kernel, :logger, :mix, :stdlib, :tt]

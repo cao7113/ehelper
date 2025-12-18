@@ -1,0 +1,42 @@
+defmodule Mix.Tasks.H.Cget do
+  @shortdoc "httpc get a resource"
+
+  @moduledoc """
+  #{@shortdoc}.
+
+  use httpc client to get a resource
+  """
+
+  use Mix.Task
+  alias Ehelper.Httpc
+
+  @default_url "https://slink.fly.dev/api/ping"
+
+  @switches [
+    debug: :boolean,
+    method: :string
+  ]
+
+  @aliases [
+    m: :method,
+    d: :debug
+  ]
+
+  @impl true
+  def run(args) do
+    {opts, argv} = OptionParser.parse_head!(args, strict: @switches, aliases: @aliases)
+    url = List.first(argv) || @default_url
+
+    Httpc.ensure_started!()
+
+    shell = Mix.shell()
+
+    shell.info("Fetching URL: #{url}")
+
+    case Httpc.get(url, opts) do
+      %{status: status, body: body, taken_ms: taken_ms} ->
+        shell.info("Status: #{status} taken_ms: #{taken_ms}")
+        body |> IO.inspect()
+    end
+  end
+end

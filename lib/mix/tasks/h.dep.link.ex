@@ -1,5 +1,5 @@
 defmodule Mix.Tasks.H.Dep.Link do
-  @shortdoc "Link dep code to local repository in _repos/"
+  @shortdoc "Link dep to local repository code in _repos/"
 
   @moduledoc """
   #{@shortdoc}.

@@ -3,7 +3,7 @@
   inputs: [
     ".iex.exs",
     "{mix,.formatter}.exs",
-    "{config,lib,test,run}/**/*.{ex,exs}",
+    "{config,lib,test,priv,run}/**/*.{ex,exs,eex}",
     "priv/**/*.eex"
   ]
 ]

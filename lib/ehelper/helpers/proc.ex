@@ -45,8 +45,7 @@ defmodule Ehelper.Proc do
     end
   end
 
-  defdelegate alive?(pid), to: Process
-  defdelegate whereis(name), to: Process
+  def alive?(pid), do: pid |> pid() |> Process.alive?()
 
   @doc """
   Get process id

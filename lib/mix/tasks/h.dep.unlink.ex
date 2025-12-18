@@ -1,5 +1,5 @@
 defmodule Mix.Tasks.H.Dep.Unlink do
-  @shortdoc "Unlink dep code from local repository in _repos/"
+  @shortdoc "Unlink dep from local repository code in _repos/"
 
   @moduledoc """
   #{@shortdoc}.

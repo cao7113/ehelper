@@ -10,13 +10,15 @@ IEx.configure(auto_reload: true)
 # IEx.configure(inspect: [limit: :infinity])
 # iex> IEx.configuration
 
+## App specific here
 
 import_file_if_available(".iex.local.exs")
 
-## Helps
+## Helpers
 
 # Load another ".iex.exs" file
 # import_file("~/.iex.exs")
+# import_file_if_available("~/.iex.exs")
 
 # Import some module from lib that may not yet have been defined
 # import_if_available(MyApp.Mod)

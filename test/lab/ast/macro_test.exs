@@ -42,7 +42,7 @@ defmodule Math do
   end
 end
 
-defmodule BaseTest do
+defmodule MacroTest do
   use ExUnit.Case
 
   require Math
@@ -51,7 +51,7 @@ defmodule BaseTest do
   test "mod" do
     assert get_mod() == Math
     assert quoted_mod() == __MODULE__
-    assert quoted_mod() == BaseTest
+    assert quoted_mod() == MacroTest
     assert ref_mod_value() == Math
     assert caller_mod() == __MODULE__
   end

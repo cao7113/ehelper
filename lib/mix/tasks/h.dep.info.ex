@@ -1,9 +1,11 @@
-defmodule Mix.Tasks.H.Dep.Meta do
+defmodule Mix.Tasks.H.Dep.Info do
   @shortdoc "Show hex dep meta-info from hex.pm"
   @moduledoc """
   #{@shortdoc}.
 
   This task fetches and displays dependency information from hex.pm.
+
+  Like mix hex.info req
   """
 
   use Mix.Task
