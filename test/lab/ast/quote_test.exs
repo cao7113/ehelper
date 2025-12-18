@@ -1,4 +1,4 @@
-defmodule Macro.QuotedExpressionTest do
+defmodule QuotedExpressionTest do
   use ExUnit.Case
 
   test "quote values" do
@@ -52,5 +52,11 @@ defmodule Macro.QuotedExpressionTest do
     # map should escaped before unquoting
     e = quote do: unquote(Macro.escape(m))
     assert {:%{}, [], [{:a, 1}]} == e
+  end
+
+  test "Macro.to_string/1" do
+    ast = quote(do: var)
+    assert ast == {:var, [], QuotedExpressionTest}
+    assert Macro.to_string(ast) == "var"
   end
 end

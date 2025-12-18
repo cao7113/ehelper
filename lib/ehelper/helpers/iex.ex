@@ -23,12 +23,45 @@ defmodule Ehelper.Iex do
   def pinfo(pid), do: Ehelper.Proc.info(pid)
   def pstate(pid), do: Ehelper.Proc.state(pid)
   defdelegate pstatus(pid), to: Ehelper.Proc, as: :status
+  defdelegate alive?(pid), to: Ehelper.Proc
+  def as_pid(pid), do: Ehelper.Proc.pid(pid)
   def dict(pid), do: Ehelper.Proc.dict(pid)
   def mailbox(pid), do: Ehelper.Proc.mailbox(pid)
   def msgbox(pid), do: Ehelper.Proc.msgbox(pid)
 
   def cwd, do: IEx.Helpers.pwd()
+  def puts(device \\ :stdio, s), do: IO.puts(device, s)
+
   def pp(o), do: Ehelper.pp(o)
+
+  @compile {:no_warn_undefined, :observer}
+  @doc """
+  Observer debug tool
+
+  - https://hexdocs.pm/elixir/debugging.html#observer
+
+  Mix.ensure_application!(:wx)             # Not necessary on Erlang/OTP 27+
+  Mix.ensure_application!(:runtime_tools)  # Not necessary on Erlang/OTP 27+
+  Mix.ensure_application!(:observer)
+  :observer.start()
+  """
+  def observer(opts \\ []) do
+    if Code.ensure_loaded?(Mix) do
+      # Mix.State.builtin_apps()
+      Mix.ensure_application!(:observer)
+      :ok == Application.ensure_loaded(:observer)
+
+      start = Keyword.get(opts, :start, true)
+
+      if start do
+        :observer.start()
+      else
+        Application.get_application(:observer)
+      end
+    else
+      {:error, :mix_not_found}
+    end
+  end
 
   @doc """
   Output some blanks, like: IEx.Helpers.clear()

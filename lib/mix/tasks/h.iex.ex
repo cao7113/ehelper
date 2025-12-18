@@ -29,7 +29,7 @@ defmodule Mix.Tasks.H.Iex do
     # todo: hello-world => Hello World
     dirname = File.cwd!() |> Path.basename() |> String.capitalize()
     assigns = [dirname: dirname]
-    tmpl_file = get_tmpl_file("dot.iex.exs.eex")
+    tmpl_file = Mix.Template.get_priv_file("dot.iex.exs.eex")
 
     if dry do
       EEx.eval_file(tmpl_file, assigns: assigns)
@@ -38,9 +38,5 @@ defmodule Mix.Tasks.H.Iex do
       opts = [format_elixir: true] |> Keyword.merge(opts)
       copy_template(tmpl_file, ".iex.exs", assigns, opts)
     end
-  end
-
-  def get_tmpl_file(priv_file) do
-    Path.join(:code.priv_dir(:ehelper), priv_file)
   end
 end

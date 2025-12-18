@@ -4,7 +4,6 @@ defmodule Ehelper do
   """
   require IEx
 
-  @compile {:no_warn_undefined, [:observer]}
   # @compile {:no_warn_undefined, :all}
 
   require Logger
@@ -21,16 +20,16 @@ defmodule Ehelper do
   def i, do: info()
 
   def info do
-    %{
-      version: System.version(),
-      build_info: System.build_info(),
+    [
+      elixir_version: System.version(),
       otp_release: System.otp_release(),
+      build_info: System.build_info(),
       endiance: System.endianness(),
-      time: System.system_time(),
-      system_os_pid: System.pid(),
       self_vm_pid: self(),
-      top_started_apps: Ehelper.App.app_names() |> Enum.take(10)
-    }
+      system_os_pid: System.pid(),
+      top_apps: Ehelper.App.app_names(sort: false) |> Enum.take(5),
+      ehelper: Ehelper.App.spec(:ehelper)
+    ]
   end
 
   @doc """
@@ -125,25 +124,6 @@ defmodule Ehelper do
   def pstate(pid), do: Ehelper.Proc.state(pid)
 
   ## Utils
-
-  # https://hexdocs.pm/elixir/debugging.html#observer
-  def observer(opts \\ []) do
-    if Code.ensure_loaded?(Mix) do
-      # Mix.State.builtin_apps()
-      Mix.ensure_application!(:observer)
-      :ok == Application.ensure_loaded(:observer)
-
-      start = Keyword.get(opts, :start, true)
-
-      if start do
-        :observer.start()
-      else
-        Application.get_application(:observer)
-      end
-    else
-      {:error, :mix_not_found}
-    end
-  end
 
   def pp(info, opts \\ []) do
     info |> IO.inspect(limit: :infinity)

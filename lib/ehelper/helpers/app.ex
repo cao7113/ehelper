@@ -3,12 +3,38 @@ defmodule Ehelper.App do
   Application helpers
   """
 
+  def app_names(opts \\ []) do
+    opts
+    |> Keyword.put_new(:sort, true)
+    |> get_apps()
+    |> Enum.map(fn {app, _desc, _ver} ->
+      app
+    end)
+  end
+
   def spec(app \\ :mix) when is_atom(app) do
     Application.spec(app)
-    |> then(fn opts ->
-      Keyword.put(opts, :modules, Enum.take(opts[:modules] || [], 3) ++ [:may_ignored])
+    |> then(fn
+      nil ->
+        nil
+
+      opts ->
+        mods = opts[:modules] || []
+
+        mods_len = length(mods)
+        hd_mod = List.first(mods)
+        path = :code.which(hd_mod) |> to_string() |> Path.dirname()
+
+        if length(mods) <= 3 do
+          opts
+        else
+          Keyword.put(opts, :modules, Enum.take(mods, 3) ++ ["#{mods_len - 3}..."])
+        end
+        |> Keyword.put(:load_path, path)
+        |> Keyword.put(:started?, started?(app))
+
+        # |> Enum.sort()
     end)
-    |> Enum.sort()
   end
 
   def spec_of(app, key) do
@@ -24,15 +50,6 @@ defmodule Ehelper.App do
     |> get_apps()
     |> Enum.find(fn {a, _, _} ->
       a == app
-    end)
-  end
-
-  def app_names(opts \\ []) do
-    opts
-    |> Keyword.put_new(:sort, true)
-    |> get_apps()
-    |> Enum.map(fn {app, _desc, _ver} ->
-      app
     end)
   end
 
@@ -84,8 +101,8 @@ defmodule Ehelper.App do
         # ** (ArgumentError) raise/1 and reraise/2 expect a module name, string or exception as the first argument, got: {:abc, {~c"no such file or directory", ~c"abc.app"}}
         raise "No [#{app}] app, because #{reason |> inspect()}"
 
-        # {:error, reason} ->
-        #   raise reason |> inspect()
+      {:error, reason} ->
+        raise reason |> inspect()
     end
   end
 end

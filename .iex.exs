@@ -8,5 +8,9 @@ alias Mix.Project, as: Prj
 alias Mix.Dep
 # deps = Dep.load_and_cache()
 
-# if in Mix available
+## Net
+alias Ehelper.Httpc, as: Httpc
+alias Ehelper.Httpc, as: Hc
+
+# if Mix available
 # Mix.Local.append_archives()

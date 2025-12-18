@@ -32,11 +32,13 @@ defmodule Mix.DepInfo do
       else
         IO.puts("# [#{pkg}] loading pkg info into: #{cache_path}")
         start = DateTime.utc_now()
+        # use :timer.tc
 
         # todo 1 only ensure :hex loaded 2 use hex api directly?
         Mix.Local.append_archives()
         Application.ensure_all_started(:hex)
 
+        # todo debug
         {:ok, {200, _headers, body}} = Hex.API.Package.get(nil, pkg, nil)
 
         file_cache = Keyword.get(opts, :file_cache, true)
