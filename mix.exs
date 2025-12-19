@@ -37,8 +37,6 @@ defmodule Ehelper.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      # {:req, ">= 0.0.0", optional: true},
-      {:req, "~> 0.5", optional: true},
       {:git_ops, "~> 2.9", only: [:dev], runtime: false, local_linking: true},
       {:ex_doc, "~> 0.39", only: :dev, runtime: false}
     ]

@@ -5,7 +5,7 @@ defmodule Mix.Tasks.H.Dep.Info do
 
   This task fetches and displays dependency information from hex.pm.
 
-  Like mix hex.info req
+  Like mix hex.info ehelper
   """
 
   use Mix.Task

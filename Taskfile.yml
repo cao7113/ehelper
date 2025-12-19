@@ -30,7 +30,7 @@ tasks:
       HEX_API_KEY: $HEX_API_KEY
     cmds:
       - mix hex.publish --yes --replace
-  pub-docs: mix hex.publish docs --yes
+  pub.docs: mix hex.publish docs --yes
 
   ## Git ops
   ops.up: mix git_ops.release --yes && git push --follow-tags

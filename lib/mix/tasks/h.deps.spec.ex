@@ -18,7 +18,7 @@ defmodule Mix.Tasks.H.Deps.Spec do
     Mix.Project.get!()
 
     {opts, names} = OptionParser.parse!(args, strict: @switches, aliases: @aliases)
-    if names == [], do: Mix.raise("require dep-app names like: mix h.deps.spec req git")
+    if names == [], do: Mix.raise("require dep-app names like: mix h.deps.spec git_ops")
     loaded_opts = if opts[:env_target], do: [env: Mix.env(), target: Mix.target()], else: []
 
     deps =

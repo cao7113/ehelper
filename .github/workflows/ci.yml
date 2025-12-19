@@ -21,6 +21,8 @@ jobs:
   build:
     name: Build and test
     runs-on: ubuntu-latest
+    # env:
+    #   MIX_ENV: test
 
     steps:
       - uses: actions/checkout@v4
@@ -45,49 +47,3 @@ jobs:
         run: mix test
 
 
-
-# name: Elixir CI
-
-# on:
-#   push:
-#     branches: ["main"]
-#   pull_request:
-#     branches: ["main"]
-
-# permissions:
-#   contents: read
-
-# jobs:
-#   build:
-#     name: Build and test
-#     runs-on: ubuntu-latest
-#     env:
-#       MIX_ENV: test
-#     steps:
-#       - name: Checkout code
-#         uses: actions/checkout@v4
-
-#       - name: Inspect env
-#         run: echo MIX_ENV=$MIX_ENV
-
-#       - name: Set up Elixir
-#         uses: erlef/setup-beam@v1
-#         with:
-#           # compatible with asdf
-#           version-file: .tool-versions
-#           version-type: strict
-#           # elixir-version: '1.17.1'
-#           # otp-version: '27.0'
-
-#       - name: Restore dependencies cache
-#         uses: actions/cache@v4
-#         with:
-#           path: deps
-#           key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
-#           restore-keys: ${{ runner.os }}-mix-
-
-#       - name: Install dependencies
-#         run: mix deps.get
-
-#       - name: Run tests
-#         run: mix test

@@ -1,4 +1,4 @@
-defmodule EhelperTest do
+defmodule Ehelper.HttpcTest do
   use ExUnit.Case
   alias Ehelper.Httpc
 

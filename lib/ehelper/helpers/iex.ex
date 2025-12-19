@@ -49,7 +49,7 @@ defmodule Ehelper.Iex do
     if Code.ensure_loaded?(Mix) do
       # Mix.State.builtin_apps()
       Mix.ensure_application!(:observer)
-      :ok == Application.ensure_loaded(:observer)
+      Application.ensure_loaded(:observer)
 
       start = Keyword.get(opts, :start, true)
 
