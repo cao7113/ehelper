@@ -40,29 +40,35 @@ defmodule Mix.Tasks.H.Deps.Links do
       Path.wildcard(glob)
       |> Enum.filter(fn d -> Ehelper.File.is_link?(d) end)
 
-    shell.info("# #{Enum.count(items)} dep links with glob: #{glob}")
+    links_count = Enum.count(items)
 
-    max_letter =
+    if links_count > 0 do
+      shell.info("# #{links_count} dep links with glob: #{glob}")
+
+      max_letter =
+        items
+        |> Enum.map(fn d -> String.length(d) end)
+        |> Enum.max()
+
       items
-      |> Enum.map(fn d -> String.length(d) end)
-      |> Enum.max()
+      |> Enum.sort()
+      |> Enum.map(fn d ->
+        target = File.read_link!(d)
+        space_num = max_letter - String.length(d)
+        spaces = String.duplicate(" ", space_num)
+        shell.info("* #{d}#{spaces} -> #{target}")
+      end)
 
-    items
-    |> Enum.sort()
-    |> Enum.map(fn d ->
-      target = File.read_link!(d)
-      space_num = max_letter - String.length(d)
-      spaces = String.duplicate(" ", space_num)
-      shell.info("* #{d}#{spaces} -> #{target}")
-    end)
-
-    # cmd = "find #{links_root} -type l -depth 1 -exec ls -l {} \\;"
-    # Mix.shell().info("# cmd: #{cmd}")
-    # System.shell(cmd)
-    # |> case do
-    #   {msg, 0} -> IO.puts(msg)
-    #   {"", 1} -> IO.puts("No dep links")
-    #   other -> other |> Ehelper.pp()
-    # end
+      # cmd = "find #{links_root} -type l -depth 1 -exec ls -l {} \\;"
+      # Mix.shell().info("# cmd: #{cmd}")
+      # System.shell(cmd)
+      # |> case do
+      #   {msg, 0} -> IO.puts(msg)
+      #   {"", 1} -> IO.puts("No dep links")
+      #   other -> other |> Ehelper.pp()
+      # end
+    else
+      shell.info("No deps-links now")
+    end
   end
 end

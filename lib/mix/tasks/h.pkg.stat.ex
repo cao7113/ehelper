@@ -1,5 +1,5 @@
-defmodule Mix.Tasks.H.Deps.Metas do
-  @shortdoc "Local cached deps meta-info stats managed by ehelper"
+defmodule Mix.Tasks.H.Pkg.Stat do
+  @shortdoc "Local cached packages meta-info stats managed by ehelper"
   @moduledoc """
   #{@shortdoc}.
 
@@ -8,7 +8,7 @@ defmodule Mix.Tasks.H.Deps.Metas do
   """
 
   use Mix.Task
-  alias Mix.DepInfo
+  alias Mix.PkgInfo
 
   @switches [
     force: :boolean
@@ -20,7 +20,7 @@ defmodule Mix.Tasks.H.Deps.Metas do
   def run(args) do
     {_opts, _, _} = OptionParser.parse(args, strict: @switches, aliases: @aliases)
 
-    root = DepInfo.dep_cache_root()
+    root = PkgInfo.dep_cache_root()
     files = Path.wildcard("#{root}/*.json")
     names = files |> Enum.map(&Path.basename(&1, ".json"))
     timings = File.stat!(root, time: :local) |> Map.take([:atime, :mtime, :ctime])

@@ -1,0 +1,31 @@
+  @source_url "https://github.com/cao7113/ehelper"
+
+  def project do
+    [
+      app: @app,
+      version: @version,
+      elixir: "~> 1.17",
+      start_permanent: Mix.env() == :prod,
+      # deps: deps(),
+      deps: env_deps(Mix.env()),
+      aliases: aliases(),
+      name: "ehelper",
+      description: "Daily mix helper tasks",
+      source_url: @source_url,
+      homepage_url: @source_url,
+      package: package()
+    ]
+  end
+
+  # hex package metadata as https://hex.pm/docs/publish
+  def package do
+    [
+      links: %{
+        "GitHub" => @source_url,
+        "Docs" => "https://hexdocs.pm/ehelper"
+      },
+      files: ["lib", "priv", "mix.exs", "mix.lock", "README.md"],
+      licenses: ["Apache-2.0"],
+      maintainers: ["cao7113"]
+    ]
+  end

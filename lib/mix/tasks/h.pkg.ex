@@ -1,4 +1,4 @@
-defmodule Mix.Tasks.H.Dep.Info do
+defmodule Mix.Tasks.H.Pkg do
   @shortdoc "Show hex dep meta-info from hex.pm"
   @moduledoc """
   #{@shortdoc}.
@@ -10,7 +10,7 @@ defmodule Mix.Tasks.H.Dep.Info do
 
   use Mix.Task
 
-  alias Mix.DepInfo
+  alias Mix.PkgInfo
 
   @switches [
     force: :boolean,
@@ -25,16 +25,16 @@ defmodule Mix.Tasks.H.Dep.Info do
   @impl true
   def run(args) do
     {opts, args, _error} = OptionParser.parse(args, switches: @switches, aliases: @aliases)
-    name = args |> List.first()
+    pkg = args |> List.first()
 
     pkg =
-      if name do
-        name |> String.trim()
+      if pkg do
+        pkg |> String.trim()
       else
         Mix.raise("Require dependency name!")
       end
 
-    info = DepInfo.get_info(pkg, opts)
+    info = PkgInfo.get_info(pkg, opts)
     info |> Ehelper.pp()
   end
 end

@@ -1,6 +1,6 @@
 defmodule Ehelper.Httpc do
   @moduledoc """
-  Simple HTTP Client by wrapping :httpc (erlang builtin HTTP/1.1 client, erlang archives cannot use external deps)
+  Simple HTTP Client by wrapping :httpc (erlang builtin HTTP/1.1 client, archives cannot use other external deps)
 
   more ref notes/httpc.md
   """
@@ -8,8 +8,6 @@ defmodule Ehelper.Httpc do
   require Logger
 
   @doc """
-  https://github.com/phoenixframework/phoenix/blob/v1.7.6/lib/mix/tasks/phx.gen.release.ex#L235
-  https://github.com/phoenixframework/phoenix/blob/v1.7.7/lib/mix/tasks/phx.gen.release.ex#L192
   mix h.cget https://hub.docker.com/v2/namespaces/hexpm/repositories/elixir/tags\?name\=1.14.5-erlang-25.3-debian-bullseye-
 
   iex> Hc.get "http://localhost:4000/api/ping"
@@ -63,7 +61,11 @@ defmodule Ehelper.Httpc do
       :httpc.set_options(proxy_opts)
     end
 
-    headers = headers |> Map.put_new("content-type", "text/html")
+    headers =
+      headers
+      |> Map.put_new("content-type", "text/html")
+      |> Map.put_new("user-agent", "erlang/httpc")
+
     ct_type = headers["content-type"] |> String.to_charlist()
 
     headers =

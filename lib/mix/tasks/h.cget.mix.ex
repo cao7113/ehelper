@@ -28,6 +28,7 @@ defmodule Mix.Tasks.H.Cget.Mix do
     shell = Mix.shell()
     shell.info("Fetching URL: #{url}")
 
-    Mix.Utils.read_path(url) |> dbg
+    Mix.Utils.read_path(url)
+    |> dbg
   end
 end

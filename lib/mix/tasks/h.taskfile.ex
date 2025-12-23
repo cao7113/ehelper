@@ -6,12 +6,14 @@ defmodule Mix.Tasks.H.Taskfile do
 
   @switches [
     force: :boolean,
-    quiet: :boolean
+    quiet: :boolean,
+    dry: :boolean
   ]
 
   @aliases [
     f: :force,
-    q: :quiet
+    q: :quiet,
+    d: :dry
   ]
 
   @impl true
@@ -22,10 +24,22 @@ defmodule Mix.Tasks.H.Taskfile do
       Mix.raise("Expected \"mix h.taskfile\" without arguments, got: #{inspect(args)}")
     end
 
-    copy_template(tmpl_file("Taskfile.yml.eex"), "Taskfile.yml", [], opts)
+    # copy_template(tmpl_file("Taskfile.yml.eex"), "Taskfile.yml", [], opts)
+    assigns = []
+    dry = Keyword.get(opts, :dry)
+
+    tmpl_file = Mix.Template.get_priv_file("Taskfile.yml.eex")
+
+    if dry do
+      EEx.eval_file(tmpl_file, assigns: assigns)
+      |> Mix.shell().info()
+    else
+      opts = [format_elixir: true] |> Keyword.merge(opts)
+      copy_template(tmpl_file, "Taskfile.yml", assigns, opts)
+    end
   end
 
-  def tmpl_file(priv_file) do
-    Path.join(:code.priv_dir(:ehelper), priv_file)
-  end
+  # def tmpl_file(priv_file) do
+  #   Path.join(:code.priv_dir(:ehelper), priv_file)
+  # end
 end

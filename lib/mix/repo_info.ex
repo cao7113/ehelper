@@ -3,7 +3,7 @@ defmodule Mix.RepoInfo do
   Repo info
   """
 
-  alias Mix.DepInfo
+  alias Mix.PkgInfo
 
   def clone_repo(pkg, opts \\ []) do
     pkg = pkg |> to_string
@@ -46,8 +46,8 @@ defmodule Mix.RepoInfo do
   end
 
   def get_github_url(name, opts \\ []) do
-    dep = DepInfo.get_info(name, opts)
-    DepInfo.github_url(dep)
+    dep = PkgInfo.get_info(name, opts)
+    PkgInfo.github_url(dep)
   end
 
   def local_repo_path(name, opts \\ []) do

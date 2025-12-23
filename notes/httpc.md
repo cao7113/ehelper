@@ -5,18 +5,10 @@
 ! Mainly used in archive, simple http request to reduce external dependacies.
 ! Generally used should use `reqer`(simple wrapper around `req` related-libraries)
 
-- https://andrealeopardi.com/posts/breakdown-of-http-clients-in-elixir/
-- https://andrealeopardi.com/posts/breakdown-of-http-clients-in-elixir/#when-to-use-httpc
-- https://andrealeopardi.com/posts/breakdown-of-http-clients-in-elixir/#choosing-the-right-client
+- https://www.erlang.org/doc/apps/inets/http_client.html#configuration
+- https://www.erlang.org/doc/apps/inets/httpc.html
 - Cheatsheet: https://elixirforum.com/t/httpc-cheatsheet/50337
-
-- Official docs:
-  - https://www.erlang.org/doc/apps/inets/http_client.html#configuration
-  - https://www.erlang.org/doc/apps/inets/httpc.html
-
-The HTTP client default profile is started when the Inets application is started and is then available to all processes on that Erlang node.
-
-![inets sup tree](httpc.png)
+- https://andrealeopardi.com/posts/breakdown-of-http-clients-in-elixir/#when-to-use-httpc
 
 ## TODO
 
@@ -36,13 +28,10 @@ iex> :httpc.request('https://slink.fly.dev/api/ping')
   [
     {~c"cache-control", ~c"max-age=0, private, must-revalidate"},
     {~c"date", ~c"Thu, 18 Dec 2025 09:17:43 GMT"},
-    {~c"via", ~c"1.1 fly.io, 1.1 fly.io"},
-    {~c"server", ~c"Fly/fbde0e6c3 (2025-12-17)"},
     {~c"vary", ~c"accept-encoding"},
     {~c"content-length", ~c"14"},
     {~c"content-type", ~c"application/json; charset=utf-8"},
-    {~c"x-request-id", ~c"GIJEoVDUIbdPhM8AAHTx"},
-    {~c"fly-request-id", ~c"01KCRC0F50W9DN10784V17V4PM-sjc"}
+    {~c"x-request-id", ~c"GIJEoVDUIbdPhM8AAHTx"}
   ], ~c"{\"msg\":\"pong\"}"}}
 ```
 
@@ -55,6 +44,12 @@ iex> :httpc.request('https://elixir-lang.org')
 ```
 
 > **Note:** Use single-quoted charlists for Erlang charlist literals (e.g., `'https://...')`.
+
+## Provile and sup-tree
+
+The HTTP client default profile is started when the Inets application is started and is then available to all processes on that Erlang node.
+
+![inets sup tree](httpc.png)
 
 ## Use with Mix.Utils
 
@@ -72,13 +67,14 @@ iex> Mix.Utils.read_path("https://slink.fly.dev/api/ping")
 
 ## Learning from other projects
 
-- Hex: https://github.com/hexpm/hex/blob/main/lib/hex/http.ex#L69
-  - Search results: https://github.com/search?q=repo%3Ahexpm%2Fhex%20httpc&type=code
+- Hex search: https://github.com/search?q=repo%3Ahexpm%2Fhex%20httpc&type=code
+  - https://github.com/hexpm/hex/blob/main/lib/hex/http.ex#L69
 
-- Phoenix installer (`mix phx.new`) usage: https://github.com/phoenixframework/phoenix/blob/main/installer/lib/mix/tasks/phx.new.ex#L593
-  - Search results: https://github.com/search?q=repo%3Aphoenixframework%2Fphoenix%20httpc&type=code
-  - Notes: uses http client for generator downloads and includes test support
-  - Phoenix test-support: https://github.com/phoenixframework/phoenix/blob/v1.8.3/test/support/http_client.exs
+- Phoenix search: https://github.com/search?q=repo%3Aphoenixframework%2Fphoenix%20httpc&type=code
+  - uses http client for generator downloads and includes test support
+  - installer (`mix phx.new`) usage: https://github.com/phoenixframework/phoenix/blob/main/installer/lib/mix/tasks/phx.new.ex#L593
+  - phx.gen.release https://github.com/phoenixframework/phoenix/blob/main/lib/mix/tasks/phx.gen.release.ex#L352
+  - test-support: https://github.com/phoenixframework/phoenix/blob/v1.8.3/test/support/http_client.exs
 
 - igniter https://github.com/search?q=repo%3Aash-project%2Figniter%20httpc&type=code
   - v0.5.12 use `req` instead of httpc for calling to hex. 
@@ -86,7 +82,9 @@ iex> Mix.Utils.read_path("https://slink.fly.dev/api/ping")
   - igniter.new 简单使用 https://github.com/ash-project/igniter/blob/main/installer/lib/mix/tasks/igniter.new.ex#L535
 
 
- Tailwind and Esbuild
+- package 
+  - Tailwind 
+  - Esbuild
 
 ## Other use httpc in elixir ecosystem
 

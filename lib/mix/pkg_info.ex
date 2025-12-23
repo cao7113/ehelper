@@ -1,4 +1,4 @@
-defmodule Mix.DepInfo do
+defmodule Mix.PkgInfo do
   @moduledoc """
   Dep info
 
@@ -90,7 +90,7 @@ defmodule Mix.DepInfo do
 
   def dep_cache_root(opts \\ []) do
     root =
-      System.get_env("MIX_DEP_INFO_ROOT", "~/dev/_repos/mix.deps.info")
+      System.get_env("MIX_PKGS_INFO_ROOT", "~/dev/_repos/mix.pkgs.info")
       |> Path.expand()
 
     mk = Keyword.get(opts, :make_dir, true)

@@ -6,6 +6,15 @@
 
 Elixir/Erlang daily helpers and learning playground.
 
+NOTE: mainly used as archive and global utils in .iex.exs, no other dependecies required except elixir!!
+
+## Usage
+
+```
+export MIX_DEBUG=1 
+mix h.cget https://api.github.com/repos/elixir-lang/elixir
+```
+
 ## Check ehelper archive in your project
 
 ```
@@ -28,3 +37,4 @@ mix up
 ## Similar projects
 
 - https://github.com/membraneframework/bunch
+- [Other old ehelper, intresting?](https://github.com/philosophers-stone/ehelper)

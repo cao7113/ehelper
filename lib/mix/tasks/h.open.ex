@@ -14,7 +14,7 @@ defmodule Mix.Tasks.H.Open do
   """
 
   use Mix.Task
-  alias Mix.DepInfo
+  alias Mix.PkgInfo
   @compile {:no_warn_undefined, [Hex.Utils]}
 
   @switches [
@@ -41,9 +41,9 @@ defmodule Mix.Tasks.H.Open do
         Mix.raise("Require dependency name!")
       end
 
-    info = DepInfo.get_info(pkg, opts)
-    github_url = DepInfo.github_url(info)
-    docs_url = DepInfo.docs_url(info)
+    info = PkgInfo.get_info(pkg, opts)
+    github_url = PkgInfo.github_url(info)
+    docs_url = PkgInfo.docs_url(info)
     pkg_url = info.pkg_url
     url = github_url || docs_url || pkg_url
 

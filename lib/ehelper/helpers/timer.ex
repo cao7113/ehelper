@@ -1,14 +1,17 @@
 defmodule Ehelper.Timer do
   @moduledoc """
   - https://www.erlang.org/doc/apps/stdlib/timer.html
+
+  {:erlang.timestamp(), :os.timestamp()}
+  :timer.now_diff(t2, t1)
   """
 
   require Logger
 
   @doc """
-
   pos_integer() | second | millisecond | microsecond | nanosecond | native | perf_counter |
   erlang:convert_time_unit(1, second, native)
+  default microsecond
   - https://hexdocs.pm/elixir/System.html#convert_time_unit/3
   - https://www.erlang.org/doc/apps/erts/erlang#t:time_unit/0
   """
@@ -35,7 +38,7 @@ defmodule Ehelper.Timer do
     tc(
       fn ->
         Process.sleep(100)
-        :mock
+        :test_only
       end,
       [],
       opts
