@@ -5,6 +5,15 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v0.2.3](https://github.com/cao7113/ehelper/compare/v0.2.2...v0.2.3) (2025-12-23)
+
+
+
+
+### Bug Fixes:
+
+* improve mix h.deps all flag by Ryn Cao
+
 ## [v0.2.2](https://github.com/cao7113/ehelper/compare/v0.2.1...v0.2.2) (2025-12-18)
 
 
