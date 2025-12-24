@@ -8,7 +8,7 @@ defmodule Mix.Tasks.H.Gh.Repo do
   """
 
   use Mix.Task
-  alias Ehelper.Httpc
+  alias ReqClient.Httpc
 
   @default_url "https://api.github.com/repos/elixir-lang/elixir"
 

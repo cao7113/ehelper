@@ -1,4 +1,4 @@
-defmodule Mix.Tasks.H.Cget do
+defmodule Mix.Tasks.H.Hc do
   @shortdoc "httpc get a resource"
 
   @moduledoc """
@@ -8,7 +8,7 @@ defmodule Mix.Tasks.H.Cget do
   """
 
   use Mix.Task
-  alias Ehelper.Httpc
+  alias ReqClient.Httpc
 
   @default_url "https://slink.fly.dev/api/ping"
 

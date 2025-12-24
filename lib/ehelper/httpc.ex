@@ -1,4 +1,5 @@
-defmodule Ehelper.Httpc do
+## Fetching URL: https://raw.githubusercontent.com/cao7113/req_client/refs/heads/main/lib/req_client/ref/httpc.ex at 2025-12-24 03:20:39.981032Z
+defmodule ReqClient.Httpc do
   @moduledoc """
   Simple HTTP Client by wrapping :httpc (erlang builtin HTTP/1.1 client, archives cannot use other external deps)
 
@@ -49,7 +50,7 @@ defmodule Ehelper.Httpc do
   end
 
   def request(method, url, headers, body, opts) do
-    if opts[:check_deps], do: ensure_started!()
+    unless opts[:no_check_deps], do: ensure_started!()
 
     unless opts[:bypass_proxy] do
       proxy_opts = get_env_proxy_opts(opts)
@@ -192,10 +193,10 @@ defmodule Ehelper.Httpc do
     ] == :httpc.ssl_verify_host_options(verify_host)
   end
 
-  @compile {:no_warn_undefined, [CAStore]}
-  def castore_path do
-    Code.ensure_loaded?(CAStore) && String.to_charlist(CAStore.file_path())
-  end
+  # @compile {:no_warn_undefined, [CAStore]}
+  # def castore_path do
+  #   Code.ensure_loaded?(CAStore) && String.to_charlist(CAStore.file_path())
+  # end
 
   def content_wise_body(body, headers) when is_list(headers) do
     if is_json_resp?(headers) do
@@ -295,10 +296,10 @@ defmodule Ehelper.Httpc do
     end
   end
 
-  def remove_proxy do
-    :httpc.set_options(proxy: {:undefined, []}, https_proxy: {:undefined, []})
-    get_http_opts()
-  end
+  # def remove_proxy do
+  #   :httpc.set_options(proxy: {:undefined, []}, https_proxy: {:undefined, []})
+  #   get_http_opts()
+  # end
 
   def find_system_env(keys, default \\ nil) do
     keys
@@ -385,7 +386,7 @@ defmodule Ehelper.Httpc do
   end
 
   def inets_info do
-    Ehelper.App.spec(:inets)
+    Application.spec(:inets)
   end
 
   @doc """

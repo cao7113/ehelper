@@ -9,8 +9,8 @@ alias Mix.Dep
 # deps = Dep.load_and_cache()
 
 ## Net
-alias Ehelper.Httpc, as: Httpc
-alias Ehelper.Httpc, as: Hc
+alias ReqClient.Httpc, as: Httpc
+alias ReqClient.Httpc, as: Hc
 
 # if Mix available
 # Mix.Local.append_archives()

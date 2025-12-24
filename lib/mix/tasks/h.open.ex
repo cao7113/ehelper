@@ -3,7 +3,7 @@ defmodule Mix.Tasks.H.Open do
   @moduledoc """
   #{@shortdoc}.
 
-  This task fetches and displays dependency information from hex.pm.
+  Open package like: mix h.open plug
 
   ## See also
   ```

@@ -1,10 +1,12 @@
-defmodule Mix.Tasks.H.Cget.Mix do
-  @shortdoc "httpc get a resource"
+defmodule Mix.Tasks.H.Hc.Mget do
+  @shortdoc "Get a web resource with Mix.Utils.read_path"
 
   @moduledoc """
   #{@shortdoc}.
 
-  use Mix.Utils to get a resource, Good!!!
+  eg.
+    mix h.hc.mget https://slink.fly.dev/api/ping
+    mix h.hc.mget https://raw.githubusercontent.com/cao7113/req_client/refs/heads/main/lib/req_client/ref/httpc.ex
   """
 
   use Mix.Task
@@ -26,9 +28,10 @@ defmodule Mix.Tasks.H.Cget.Mix do
     {_opts, argv} = OptionParser.parse_head!(args, strict: @switches, aliases: @aliases)
     url = List.first(argv) || @default_url
     shell = Mix.shell()
-    shell.info("Fetching URL: #{url}")
+    shell.info("## Fetching URL: #{url} at #{DateTime.utc_now()}")
 
-    Mix.Utils.read_path(url)
-    |> dbg
+    with {:ok, body} <- Mix.Utils.read_path(url) do
+      IO.puts(body)
+    end
   end
 end

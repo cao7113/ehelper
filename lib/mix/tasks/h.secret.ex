@@ -2,6 +2,13 @@ defmodule Mix.Tasks.H.Secret do
   use Mix.Task
 
   @shortdoc "Gen random secret"
+  @min_bytes 20
+
+  @moduledoc """
+  #{@shortdoc}.
+
+  Generate secret like: mix h.secret -b #{@min_bytes}
+  """
 
   @switches [
     bytes: :integer
@@ -19,17 +26,16 @@ defmodule Mix.Tasks.H.Secret do
       Mix.raise("Expected \"mix h.secret\" without arguments, got: #{inspect(args)}")
     end
 
-    min = 20
-    cnt = opts[:bytes] || Enum.random(min..80)
+    cnt = Keyword.get(opts, :bytes, @min_bytes)
 
-    if cnt < min do
-      Mix.shell().error("#{cnt} less than min: #{min}")
+    if cnt < @min_bytes do
+      Mix.shell().error("#{cnt} less than min: #{@min_bytes}")
     end
 
-    Mix.shell().info("# #{cnt} random bytes then encode64")
+    Mix.shell().info("# #{cnt} random bytes then url_encode64")
 
     # todo base58 encoding？
-    Base.url_encode64(:crypto.strong_rand_bytes(cnt))
+    Base.url_encode64(:crypto.strong_rand_bytes(cnt), padding: false)
     |> Mix.shell().info()
   end
 end

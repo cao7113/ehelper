@@ -4,7 +4,8 @@
 # todo repo name and
 #  put tools in system PATH
 #  httpc version
-# use reqer
+
+# todo use req_client
 
 Mix.install([
   {:req, "~> 0.5"}

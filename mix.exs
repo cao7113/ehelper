@@ -39,7 +39,7 @@ defmodule Ehelper.MixProject do
     [
       {:git_ops, "~> 2.9", only: [:dev], runtime: false, local_linking: true},
       # mix igniter.install git_ops
-      {:igniter, "~> 0.7", only: [:dev, :test]},
+      {:igniter, "~> 0.7", only: [:dev, :test], local_linking: true},
       {:ex_doc, "~> 0.39", only: :dev, runtime: false}
     ]
   end
