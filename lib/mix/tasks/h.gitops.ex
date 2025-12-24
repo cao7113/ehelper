@@ -41,6 +41,17 @@ defmodule Mix.Tasks.H.Gitops do
 
         mix git_ops.release
 
+    ## Patches
+      - in mix.exs
+        @source_url "https://github.com/cao7113/xxx"
+        def project do
+          [
+            source_url: @source_url,
+          ]
+        end
+      - in git_ops config add below:
+        repository_url: Mix.Project.config()[:source_url],
+
     ## Tasks
 
       ## Git ops

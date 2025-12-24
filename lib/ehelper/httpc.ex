@@ -1,4 +1,4 @@
-## Fetching URL: https://raw.githubusercontent.com/cao7113/req_client/refs/heads/main/lib/req_client/ref/httpc.ex at 2025-12-24 03:20:39.981032Z
+## Fetching URL: https://raw.githubusercontent.com/cao7113/req_client/refs/heads/main/lib/req_client/ref/httpc.ex at 2025-12-24 03:34:54.656193Z
 defmodule ReqClient.Httpc do
   @moduledoc """
   Simple HTTP Client by wrapping :httpc (erlang builtin HTTP/1.1 client, archives cannot use other external deps)
@@ -9,10 +9,10 @@ defmodule ReqClient.Httpc do
   require Logger
 
   @doc """
-  mix h.cget https://hub.docker.com/v2/namespaces/hexpm/repositories/elixir/tags\?name\=1.14.5-erlang-25.3-debian-bullseye-
+  Get url
 
-  iex> Hc.get "http://localhost:4000/api/ping"
-  iex> Hc.get "https://slink.fly.dev/api/ping"
+  iex> ReqClient.Httpc.get "http://localhost:4000/api/ping"
+  iex> ReqClient.Httpc.get "https://slink.fly.dev/api/ping"
   """
   def get(url, opts \\ []) do
     headers = opts[:headers] || %{}
@@ -33,13 +33,13 @@ defmodule ReqClient.Httpc do
 
   ## Examples
 
-      iex> Hc.request(:get, "http://127.0.0.1", %{})
+      iex> ReqClient.Httpc.request(:get, "http://127.0.0.1", %{})
       {:ok, %Response{..})
 
-      iex> Hc.request(:post, "http://127.0.0.1", %{}, param1: "val1")
+      iex> ReqClient.Httpc.request(:post, "http://127.0.0.1", %{}, param1: "val1")
       {:ok, %Response{..})
 
-      iex> Hc.request(:get, "http://unknownhost", %{}, param1: "val1")
+      iex> ReqClient.Httpc.request(:get, "http://unknownhost", %{}, param1: "val1")
       {:error, ...}
 
   """
@@ -178,9 +178,9 @@ defmodule ReqClient.Httpc do
     iex(19) > :httpc.ssl_verify_host_options(true) |> Keyword.keys()
     [:verify, :cacerts, :customize_hostname_check]
 
-    iex(21)> Hc.check_ssl_config(true)
+    iex(21)> ReqClient.Httpc.check_ssl_config(true)
     true
-    iex(25)> Hc.check_ssl_config(false)
+    iex(25)> ReqClient.Httpc.check_ssl_config(false)
     false
   """
   def check_ssl_config(verify_host \\ true) do
@@ -392,9 +392,9 @@ defmodule ReqClient.Httpc do
   @doc """
   Produces a list of miscellaneous information. Intended for debugging. If no profile is specified, the default profile is used.
 
-  iex> Hc.info()
-  iex> Hc.info(:manager)
-  iex> Hc.info(:hex)
+  iex> ReqClient.Httpc.info()
+  iex> ReqClient.Httpc.info(:manager)
+  iex> ReqClient.Httpc.info(:hex)
   """
   def info(profile \\ nil) do
     case profile do

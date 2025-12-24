@@ -20,7 +20,6 @@ defmodule TypesTest do
   # todo
   # String.downcase(name, :ascii)
 
-
   test "join strings" do
     assert "hel" <> "lo" == "hello"
   end

@@ -66,12 +66,7 @@ defmodule Ehelper.Iex do
   @doc """
   Output some blanks, like: IEx.Helpers.clear()
   """
-  def blanks(n \\ 20) do
-    # 1..n
-    # |> Enum.each(fn _ ->
-    #   IO.puts("")
-    # end)
-
+  def blanks(n \\ 10) do
     "\n"
     |> String.duplicate(n)
     |> IO.puts()

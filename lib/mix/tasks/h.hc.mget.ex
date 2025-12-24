@@ -1,10 +1,15 @@
 defmodule Mix.Tasks.H.Hc.Mget do
-  @shortdoc "Get a web resource with Mix.Utils.read_path"
+  @shortdoc "Get a resource with Mix.Utils.read_path built on httpc"
 
   @moduledoc """
   #{@shortdoc}.
 
-  eg.
+  Mix.Utils.read_path is great and support proxy and timeout
+
+  - https://github.com/elixir-lang/elixir/blob/main/lib/mix/lib/mix/utils.ex#L733
+
+  ## Examples
+
     mix h.hc.mget https://slink.fly.dev/api/ping
     mix h.hc.mget https://raw.githubusercontent.com/cao7113/req_client/refs/heads/main/lib/req_client/ref/httpc.ex
   """
