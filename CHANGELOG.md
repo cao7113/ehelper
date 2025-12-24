@@ -5,6 +5,15 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v0.2.4](https://github.com/cao7113/ehelper/compare/v0.2.3...v0.2.4) (2025-12-24)
+
+
+
+
+### Improvements:
+
+* migrate httpc code to req_client package and use a copy in ehelper by Ryn Cao
+
 ## [v0.2.3](https://github.com/cao7113/ehelper/compare/v0.2.2...v0.2.3) (2025-12-23)
 
 
