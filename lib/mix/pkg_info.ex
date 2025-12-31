@@ -72,7 +72,7 @@ defmodule Mix.PkgInfo do
       api_url: body.url,
       downloads: body.downloads,
       channel: channel,
-      cache_path: cache_path
+      cache_path: "file://" <> cache_path
     }
   end
 

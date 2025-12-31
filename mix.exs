@@ -35,6 +35,9 @@ defmodule Ehelper.MixProject do
   end
 
   # Run "mix help deps" to learn about dependencies.
+  # options ref https://hexdocs.pm/mix/Mix.Tasks.Deps.html#module-options
+  # mix help deps
+  # specifying :decimal is the same as {:decimal, ">= 0.0.0"}
   defp deps do
     [
       {:git_ops, "~> 2.9", only: [:dev], runtime: false, local_linking: true},

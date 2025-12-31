@@ -13,9 +13,9 @@ defmodule Mix.Tasks.H.Docs do
 
   @impl true
   def run(args) do
-    {_opts, _, _} = OptionParser.parse(args, strict: @switches, aliases: @aliases)
+    {_opts, _} = OptionParser.parse!(args, strict: @switches, aliases: @aliases)
 
-    # todo
+    # todo: use slink service
     info = %{
       elixir: %{
         github: "https://github.com/elixir-lang/elixir",

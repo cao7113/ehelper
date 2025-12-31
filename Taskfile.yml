@@ -11,7 +11,7 @@ vars:
   # IPv6 require erlang flag: -proto_dist inet6_tcp
   NODE_HOST_V6: ::1
   SHARED_COOKIE: runman
-  httpcSrcUrl: https://raw.githubusercontent.com/cao7113/req_client/refs/heads/main/lib/req_client/ref/httpc.ex
+  httpcSrcUrl: https://raw.githubusercontent.com/cao7113/req_client/refs/heads/main/lib/req_client/channels/httpc.ex
 
 tasks:
   default: mix test

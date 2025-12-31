@@ -12,7 +12,7 @@ NOTE: mainly used as archive and global utils in .iex.exs, no other dependecies 
 
 ```
 export MIX_DEBUG=1 
-mix h.cget https://api.github.com/repos/elixir-lang/elixir
+mix h.hc https://api.github.com/repos/elixir-lang/elixir
 ```
 
 ## Check ehelper archive in your project

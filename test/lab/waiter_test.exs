@@ -1,6 +1,8 @@
 defmodule WaiterTest do
   use ExUnit.Case
 
+  @moduletag :try
+
   def do_md5(times \\ 100_000) do
     1..times
     |> Enum.each(fn i ->

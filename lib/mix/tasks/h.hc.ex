@@ -32,9 +32,9 @@ defmodule Mix.Tasks.H.Hc do
     shell.info("## Fetching URL: #{url}")
 
     case Httpc.get(url, opts) do
-      %{status: status, body: body, taken_ms: taken_ms} ->
+      {:ok, %{status: status, body: body}} ->
         body |> Ehelper.pp()
-        shell.info("# Status: #{status} taken_ms: #{taken_ms}")
+        shell.info("# Status: #{status}")
     end
   end
 end

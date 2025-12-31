@@ -1,26 +1,34 @@
-## Fetching URL: https://raw.githubusercontent.com/cao7113/req_client/refs/heads/main/lib/req_client/ref/httpc.ex at 2025-12-24 03:20:39.981032Z
+## Fetching URL: https://raw.githubusercontent.com/cao7113/req_client/refs/heads/main/lib/req_client/channels/httpc.ex at 2025-12-31 08:33:56.562625Z
 defmodule ReqClient.Httpc do
   @moduledoc """
-  Simple HTTP Client by wrapping :httpc (erlang builtin HTTP/1.1 client, archives cannot use other external deps)
+  Simple http/1 Client by wrapping :httpc (erlang builtin HTTP/1.1 client)
 
-  more ref notes/httpc.md
+  NOTE: please keep this file standalone, so it can be used in archives like ehelper!!!
+  - DONOT depends on non-elixir builtin modules
+
+  ## todo
+  - improve to use standalone profile for proxy and custom options
+
+  ## Links
+  - https://www.erlang.org/doc/apps/inets/httpc.html from inets app
+  - more ref notes/httpc.md
   """
 
+  alias ReqClient.ProxyUtils
   require Logger
 
   @doc """
-  mix h.cget https://hub.docker.com/v2/namespaces/hexpm/repositories/elixir/tags\?name\=1.14.5-erlang-25.3-debian-bullseye-
+  Get request to a url
 
-  iex> Hc.get "http://localhost:4000/api/ping"
-  iex> Hc.get "https://slink.fly.dev/api/ping"
+  iex> ReqClient.Httpc.get "https://slink.fly.dev/api/ping"
   """
   def get(url, opts \\ []) do
     headers = opts[:headers] || %{}
     body = opts[:body] || %{}
-    request(:get, url, headers, body, opts)
+    req(:get, url, headers, body, opts)
   end
 
-  def direct(url), do: :httpc.request(url)
+  def direct(url), do: url |> ReqClient.BaseUtils.get_url() |> :httpc.request()
 
   @doc """
   Performs HTTP Request and returns Response
@@ -33,46 +41,29 @@ defmodule ReqClient.Httpc do
 
   ## Examples
 
-      iex> Hc.request(:get, "http://127.0.0.1", %{})
+      iex> ReqClient.Httpc.req(:get, "http://127.0.0.1", %{})
       {:ok, %Response{..})
 
-      iex> Hc.request(:post, "http://127.0.0.1", %{}, param1: "val1")
+      iex> ReqClient.Httpc.req(:post, "http://127.0.0.1", %{}, param1: "val1")
       {:ok, %Response{..})
 
-      iex> Hc.request(:get, "http://unknownhost", %{}, param1: "val1")
+      iex> ReqClient.Httpc.req(:get, "http://unknownhost", %{}, param1: "val1")
       {:error, ...}
 
   """
-  def request(method, url, headers, body \\ "", opts \\ [])
+  def req(method, url, headers, body \\ "", opts \\ [])
 
-  def request(method, url, headers, body, opts) when is_map(body) do
-    request(method, url, headers, URI.encode_query(body), opts)
+  def req(method, url, headers, body, opts) when is_map(body) do
+    req(method, url, headers, URI.encode_query(body), opts)
   end
 
-  def request(method, url, headers, body, opts) do
+  def req(method, url, headers, body, opts) when is_map(headers) do
     unless opts[:no_check_deps], do: ensure_started!()
 
-    unless opts[:bypass_proxy] do
-      proxy_opts = get_env_proxy_opts(opts)
-
-      if opts[:debug] do
-        Logger.debug("proxy opts: #{proxy_opts |> inspect}")
-      end
-
-      :httpc.set_options(proxy_opts)
-    end
-
-    headers =
-      headers
-      |> Map.put_new("content-type", "text/html")
-      |> Map.put_new("user-agent", "erlang/httpc")
-
-    ct_type = headers["content-type"] |> String.to_charlist()
-
-    headers =
-      Enum.map(headers, fn {k, v} ->
-        {String.to_charlist(k), String.to_charlist(v)}
-      end)
+    url = ReqClient.BaseUtils.get_url(url)
+    url_cl = String.to_charlist(url)
+    {req_headers, ct_type} = get_req_headers(headers)
+    set_proxy(opts)
 
     # https://www.erlang.org/doc/apps/inets/httpc.html#request/5
     http_opts =
@@ -81,43 +72,105 @@ defmodule ReqClient.Httpc do
         timeout: opts[:timeout] || 180_000
       ] ++ smart_ssl_http_opts(url, opts)
 
-    # get_http_opts() |> dbg
+    # :binary or :string
+    req_opts = [body_format: :binary]
 
-    url_cl = String.to_charlist(url)
-
-    {duration_ms, resp} =
-      :timer.tc(
-        fn ->
-          case method do
-            :get ->
-              :httpc.request(:get, {url_cl, headers}, http_opts, body_format: :binary)
-
-            _ ->
-              :httpc.request(method, {url_cl, headers, ct_type, body}, http_opts,
-                body_format: :binary
-              )
-          end
-        end,
-        :millisecond
-      )
-
-    resp
+    case method do
+      :get -> :httpc.request(:get, {url_cl, req_headers}, http_opts, req_opts)
+      _ -> :httpc.request(method, {url_cl, req_headers, ct_type, body}, http_opts, req_opts)
+    end
     |> case do
       {:ok, {{_http, status, _status_phrase}, headers, body}} ->
         unless status in 200..299 do
           Logger.warning("HTTP status #{status}")
         end
 
-        %{
+        headers = normalize_resp_headers(headers)
+
+        resp = %{
           status: status,
-          taken_ms: duration_ms,
-          #  headers: headers,
+          headers: headers,
           body: content_wise_body(body, headers)
         }
 
-      {:error, reason} ->
-        raise "failed request with #{reason |> inspect()}"
+        {:ok, resp}
+
+      {:error, _reason} = err ->
+        err
     end
+  end
+
+  def set_proxy(opts \\ []) do
+    case opts[:proxy] do
+      p when p in [false, :no] ->
+        :disable
+
+      p when p in [true, :env, nil] ->
+        ProxyUtils.get_proxy_opts(:httpc, opts)
+
+      other ->
+        Logger.debug("unknown proxy: #{other |> inspect}")
+        :unknown_proxy
+    end
+    |> case do
+      proxy_opts when is_list(proxy_opts) ->
+        if opts[:debug] do
+          Logger.debug("use proxy opts: #{proxy_opts |> inspect}")
+        end
+
+        # todo use standalone proxy profile
+        :httpc.set_options(proxy_opts)
+
+      reason ->
+        if opts[:debug] do
+          Logger.debug("skip proxy beacause #{reason |> inspect}!!!")
+        end
+
+        ReqClient.Httpc.Utils.remove_proxy()
+    end
+  end
+
+  def get_req_headers(headers) when is_map(headers) do
+    headers =
+      if Map.has_key?(headers, "accept-encoding") do
+        Logger.warning(
+          "not support accept-encoding: #{headers["accept-encoding"]}, already delete it!"
+        )
+
+        headers |> Map.delete("accept-encoding")
+      else
+        headers
+      end
+      |> Map.put_new("user-agent", "erlang/httpc")
+      |> Map.put_new("content-type", "text/html")
+
+    ct_type = headers["content-type"] |> String.to_charlist()
+
+    headers =
+      headers
+      |> Enum.map(fn {k, v} ->
+        {String.to_charlist(k), String.to_charlist(v)}
+      end)
+
+    {headers, ct_type}
+  end
+
+  def normalize_resp_headers(headers \\ []) when is_list(headers) do
+    headers
+    |> Enum.reduce(%{}, fn {k, v}, acc ->
+      k = k |> to_string() |> String.downcase()
+      v = to_string(v)
+      existed = Map.get(acc, k)
+
+      new_val =
+        if existed do
+          existed ++ [v]
+        else
+          [v]
+        end
+
+      Map.put(acc, k, new_val)
+    end)
   end
 
   def smart_ssl_http_opts("http://" <> _, _opts), do: []
@@ -162,12 +215,72 @@ defmodule ReqClient.Httpc do
             # https://www.erlang.org/doc/apps/ssl/ssl.html#t:common_option_cert/0
             # {depth, AllowedCertChainLen} - Limits the accepted number of certificates in the certificate chain.
             # Maximum number of non-self-issued intermediate certificates that can follow the peer certificate in a valid certification path. So, if depth is 0 the PEER must be signed by the trusted ROOT-CA directly; if 1 the path can be PEER, CA, ROOT-CA; if 2 the path can be PEER, CA, CA, ROOT-CA, and so on. The default value is 10. Used to mitigate DoS attack possibilities.
-            depth: 5,
-            versions: tls_protocol_versions()
+            depth: 5
+            # versions: ReqClient.Httpc.Utils.tls_protocol_versions()
           ]
       end
 
     [ssl: conf]
+  end
+
+  def content_wise_body(body, headers) when is_map(headers) do
+    if is_json_resp?(headers) do
+      body |> JSON.decode!()
+    else
+      body
+    end
+  end
+
+  @doc """
+  Get content-type from response headers
+  """
+  def get_resp_content_type(headers) when is_map(headers) do
+    headers
+    |> Enum.find_value(fn
+      {"content-type", v} when is_list(v) -> List.first(v)
+      _ -> nil
+    end)
+  end
+
+  def is_json_resp?(headers) when is_map(headers) do
+    case get_resp_content_type(headers) do
+      ct when is_binary(ct) -> String.contains?(ct, "application/json")
+      _ -> false
+    end
+  end
+
+  def ensure_started!(apps \\ [:inets, :ssl]) do
+    {:ok, _} =
+      Application.ensure_all_started(apps,
+        # :temporary (default), :permanent, :transient
+        type: :permanent,
+        mode: :concurrent
+      )
+  end
+end
+
+defmodule ReqClient.Httpc.Utils do
+  @doc """
+  When starting the Inets application, a manager process for the default profile is started.
+  The functions in this API that do not explicitly use a profile accesses the default profile.
+  """
+  def start_profile!(profile \\ random_profile_name()) when is_atom(profile) do
+    {:ok, pid} = :inets.start(:httpc, profile: profile)
+    pid
+  end
+
+  def stop_profile!(profile) when is_atom(profile) or is_pid(profile) do
+    :ok == :inets.stop(:httpc, profile)
+  end
+
+  @doc """
+  Generate a random profile per request to avoid reuse
+  """
+  def random_profile_name do
+    :crypto.strong_rand_bytes(4)
+    |> Base.encode16()
+    |> String.downcase()
+    |> String.to_atom()
   end
 
   @doc """
@@ -178,9 +291,9 @@ defmodule ReqClient.Httpc do
     iex(19) > :httpc.ssl_verify_host_options(true) |> Keyword.keys()
     [:verify, :cacerts, :customize_hostname_check]
 
-    iex(21)> Hc.check_ssl_config(true)
+    iex(21)> ReqClient.Httpc.check_ssl_config(true)
     true
-    iex(25)> Hc.check_ssl_config(false)
+    iex(25)> ReqClient.Httpc.check_ssl_config(false)
     false
   """
   def check_ssl_config(verify_host \\ true) do
@@ -198,116 +311,20 @@ defmodule ReqClient.Httpc do
   #   Code.ensure_loaded?(CAStore) && String.to_charlist(CAStore.file_path())
   # end
 
-  def content_wise_body(body, headers) when is_list(headers) do
-    if is_json_resp?(headers) do
-      body |> JSON.decode!()
-    else
-      body
-    end
+  def remove_proxy do
+    # :httpc.set_options(proxy: {{"", 0}, []})
+    # :httpc.set_options(proxy: {:undefined, []}, https_proxy: {:undefined, []})
+    :httpc_manager.set_options(
+      [proxy: {:undefined, []}, https_proxy: {:undefined, []}],
+      :httpc_manager
+    )
+
+    get_proxy_opts()
   end
 
-  @doc """
-  Get content-type from response headers
-  """
-  def get_resp_content_type(headers) when is_list(headers) do
-    headers
-    |> nomalize_headers()
-    |> Enum.find_value(fn
-      {"content-type", v} -> v
-      _ -> nil
-    end)
-  end
-
-  def nomalize_headers(headers) when is_list(headers) do
-    headers
-    |> Enum.map(fn {k, v} ->
-      {k |> to_string() |> String.downcase(), v |> to_string()}
-    end)
-  end
-
-  def is_json_resp?(headers) when is_list(headers) do
-    case get_resp_content_type(headers) do
-      ct when is_binary(ct) -> String.contains?(ct, "application/json")
-      _ -> false
-    end
-  end
-
-  @doc """
-  Set httpc proxy from system env
-
-  A profile keeps track of proxy options, cookies, and other options that can be applied to more than one request.
-
-  - https://www.erlang.org/doc/apps/inets/httpc.html#set_options/1
-
-    {:proxy, {Proxy :: {HostName, Port}, NoProxy :: [DomainDesc | HostName | IpAddressDesc],}}
-    HostName - Example: "localhost" or "foo.bar.se"
-    DomainDesc - Example "*.Domain" or "*.ericsson.se"
-    IpAddressDesc - Example: "134.138" or "[FEDC:BA98" (all IP addresses starting with 134.138 or FEDC:BA98), "66.35.250.150" or "[2010:836B:4179::836B:4179]" (a complete IP address). proxy defaults to {undefined, []}, that is, no proxy is configured and https_proxy defaults to the value of proxy.
-  """
-  def get_env_proxy_opts(opts \\ []) do
-    no_proxy = opts[:no_proxy] || get_no_proxy_opts()
-
-    proxy_opts =
-      ["HTTP_PROXY", "http_proxy"]
-      |> find_system_env()
-      |> case do
-        nil ->
-          []
-
-        proxy ->
-          %{host: host, port: port} = URI.parse(proxy)
-          [proxy: {{String.to_charlist(host), port}, no_proxy}]
-      end
-
-    https_proxy_opts =
-      ["HTTPS_PROXY", "https_proxy"]
-      |> find_system_env()
-      |> case do
-        nil ->
-          []
-
-        proxy ->
-          %{host: host, port: port} = URI.parse(proxy)
-          [https_proxy: {{String.to_charlist(host), port}, no_proxy}]
-      end
-
-    proxy_opts ++ https_proxy_opts
-  end
-
-  def get_no_proxy_opts do
-    ["NO_PROXY", "no_proxy"]
-    |> find_system_env()
-    |> case do
-      nil ->
-        []
-
-      no_proxy ->
-        String.split(no_proxy, ",")
-        |> Enum.uniq()
-        |> Enum.map(fn host ->
-          host
-          |> String.trim()
-          |> case do
-            "." <> domain -> "*.#{domain}"
-            host -> host
-          end
-          |> String.to_charlist()
-        end)
-    end
-  end
-
-  # def remove_proxy do
-  #   :httpc.set_options(proxy: {:undefined, []}, https_proxy: {:undefined, []})
-  #   get_http_opts()
-  # end
-
-  def find_system_env(keys, default \\ nil) do
-    keys
-    |> List.wrap()
-    |> Enum.find_value(&System.get_env/1)
-    |> case do
-      nil -> default
-      value -> value
+  def get_proxy_opts do
+    with {:ok, opts} <- :httpc.get_options([:proxy, :https_proxy]) do
+      opts
     end
   end
 
@@ -357,44 +374,11 @@ defmodule ReqClient.Httpc do
   end
 
   @doc """
-  When starting the Inets application, a manager process for the default profile is started.
-  The functions in this API that do not explicitly use a profile accesses the default profile.
-  """
-  def start_profile!(profile \\ random_profile()) when is_atom(profile) do
-    {:ok, pid} = :inets.start(:httpc, profile: profile)
-    pid
-  end
-
-  def stop_profile!(profile) when is_atom(profile) or is_pid(profile) do
-    :ok == :inets.stop(:httpc, profile)
-  end
-
-  @doc """
-  Generate a random profile per request to avoid reuse
-  """
-  def random_profile do
-    :crypto.strong_rand_bytes(4) |> Base.encode16() |> String.downcase() |> String.to_atom()
-  end
-
-  def ensure_started!(apps \\ [:inets, :ssl]) do
-    {:ok, _} =
-      Application.ensure_all_started(apps,
-        #  :temporary (default), :permanent, or :transient
-        type: :permanent,
-        mode: :concurrent
-      )
-  end
-
-  def inets_info do
-    Application.spec(:inets)
-  end
-
-  @doc """
   Produces a list of miscellaneous information. Intended for debugging. If no profile is specified, the default profile is used.
 
-  iex> Hc.info()
-  iex> Hc.info(:manager)
-  iex> Hc.info(:hex)
+  iex> ReqClient.Httpc.info()
+  iex> ReqClient.Httpc.info(:manager)
+  iex> ReqClient.Httpc.info(:hex)
   """
   def info(profile \\ nil) do
     case profile do
@@ -403,8 +387,144 @@ defmodule ReqClient.Httpc do
     end
   end
 
-  defp tls_protocol_versions do
-    otp_major_vsn = :erlang.system_info(:otp_release) |> List.to_integer()
-    if otp_major_vsn < 25, do: [:"tlsv1.2"], else: [:"tlsv1.2", :"tlsv1.3"]
+  def inets_info do
+    Application.spec(:inets)
+  end
+
+  # defp tls_protocol_versions do
+  #   otp_major_vsn = :erlang.system_info(:otp_release) |> List.to_integer()
+  #   if otp_major_vsn < 25, do: [:"tlsv1.2"], else: [:"tlsv1.2", :"tlsv1.3"]
+  # end
+end
+
+defmodule ReqClient.ProxyUtils do
+  @moduledoc """
+  """
+
+  alias ReqClient.BaseUtils
+
+  @doc """
+  Set httpc proxy from system env
+
+  A profile keeps track of proxy options, cookies, and other options that can be applied to more than one request.
+
+  - https://www.erlang.org/doc/apps/inets/httpc.html#set_options/1
+
+    {:proxy, {Proxy :: {HostName, Port}, NoProxy :: [DomainDesc | HostName | IpAddressDesc],}}
+    HostName - Example: "localhost" or "foo.bar.se"
+    DomainDesc - Example "*.Domain" or "*.ericsson.se"
+    IpAddressDesc - Example: "134.138" or "[FEDC:BA98" (all IP addresses starting with 134.138 or FEDC:BA98), "66.35.250.150" or "[2010:836B:4179::836B:4179]" (a complete IP address). proxy defaults to {undefined, []}, that is, no proxy is configured and https_proxy defaults to the value of proxy.
+  """
+  def get_proxy_opts(kind \\ :httpc, opts \\ [])
+
+  def get_proxy_opts(kind = :httpc, opts) do
+    opts = Keyword.put_new(opts, :no_proxy, get_no_proxy_list(kind))
+    proxy_opts = get_http_proxy(kind, opts)
+    https_proxy_opts = get_https_proxy(kind, opts)
+    proxy_opts ++ https_proxy_opts
+  end
+
+  ## http proxy
+
+  def get_http_proxy(kind \\ :curl, opts \\ [])
+
+  def get_http_proxy(:httpc, opts) do
+    get_http_proxy(:curl)
+    |> case do
+      nil ->
+        []
+
+      proxy ->
+        %{host: host, port: port} = URI.parse(proxy)
+        [proxy: {{String.to_charlist(host), port}, opts[:no_proxy]}]
+    end
+  end
+
+  def get_http_proxy(:curl, _opts) do
+    ["HTTP_PROXY", "http_proxy"]
+    |> BaseUtils.find_system_env()
+  end
+
+  ## https proxy
+
+  def get_https_proxy(kind \\ :curl, opts \\ [])
+
+  def get_https_proxy(:httpc, opts) do
+    get_http_proxy(:curl)
+    |> case do
+      nil ->
+        []
+
+      proxy ->
+        %{host: host, port: port} = URI.parse(proxy)
+        [https_proxy: {{String.to_charlist(host), port}, opts[:no_proxy]}]
+    end
+  end
+
+  def get_https_proxy(:curl, _opts) do
+    ["HTTPS_PROXY", "https_proxy"]
+    |> BaseUtils.find_system_env()
+  end
+
+  ## no proxy
+
+  def get_no_proxy_list(kind \\ :curl)
+
+  def get_no_proxy_list(:curl) do
+    ["NO_PROXY", "no_proxy"]
+    |> BaseUtils.find_system_env()
+    |> case do
+      nil ->
+        []
+
+      rules ->
+        rules
+        |> String.split(",")
+        |> Enum.map(&String.trim/1)
+        |> Enum.uniq()
+    end
+  end
+
+  def get_no_proxy_list(kind = :httpc) do
+    get_no_proxy_list(:curl)
+    |> Enum.map(fn item ->
+      item
+      |> no_proxy_glob_host(kind)
+      |> String.to_charlist()
+    end)
+  end
+
+  def no_proxy_glob_host("." <> domain, :httpc), do: "*.#{domain}"
+  def no_proxy_glob_host(host, _), do: host
+end
+
+defmodule ReqClient.BaseUtils do
+  # shortcut urls
+  @shortcut_urls [
+    default: "https://slink.fly.dev/api/ping",
+    s: "https://slink.fly.dev/api/ping",
+    # local
+    l: "http://localhost:4000/api/ping",
+    b: "https://httpbin.org/get",
+    x: "https://x.com",
+    g: "https://google.com",
+    gh: "https://api.github.com/repos/elixir-lang/elixir"
+  ]
+
+  def shortcut_urls, do: @shortcut_urls
+
+  def get_url(url) when is_atom(url), do: @shortcut_urls[url]
+  def get_url(url) when is_binary(url), do: url
+
+  ## ENV
+
+  def find_system_env(keys, default \\ nil) do
+    keys
+    |> List.wrap()
+    |> Enum.find_value(&System.get_env/1)
+    |> case do
+      nil -> default
+      value -> value
+    end
   end
 end
