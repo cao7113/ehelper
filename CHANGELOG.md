@@ -5,6 +5,15 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v0.2.5](https://github.com/cao7113/ehelper/compare/v0.2.4...v0.2.5) (2025-12-31)
+
+
+
+
+### Bug Fixes:
+
+* update httpc code to latest req_clienet version v0.1.10 by Ryn Cao
+
 ## [v0.2.4](https://github.com/cao7113/ehelper/compare/v0.2.3...v0.2.4) (2025-12-24)
 
 
