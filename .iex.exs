@@ -9,7 +9,7 @@ alias Mix.Dep
 # deps = Dep.load_and_cache()
 
 ## Net
-alias ReqClient.Httpc, as: Hc
+alias ReqClient.Channel.Httpc, as: Hc
 
 import_if_available(Ehelper.Iex)
 

@@ -8,7 +8,7 @@ defmodule Mix.Tasks.H.Hc do
   """
 
   use Mix.Task
-  alias ReqClient.Httpc
+  alias ReqClient.Channel.Httpc
 
   @default_url "https://slink.fly.dev/api/ping"
 
