@@ -25,10 +25,11 @@ defmodule Mix.Tasks.H.Gh.Ci do
 
     File.mkdir_p!(@workflows_dir)
 
-    copy_template(tmpl_file("github.workflows.ci.eex"), ".github/workflows/ci.yml", [], opts)
-  end
-
-  def tmpl_file(priv_file) do
-    Path.join(:code.priv_dir(:ehelper), priv_file)
+    copy_template(
+      Mix.Template.get_priv_file("github.workflows.ci.eex"),
+      ".github/workflows/ci.yml",
+      [],
+      opts
+    )
   end
 end

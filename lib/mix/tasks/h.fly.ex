@@ -24,10 +24,11 @@ defmodule Mix.Tasks.H.Fly do
 
     dirname = File.cwd!() |> Path.basename() |> String.capitalize()
 
-    copy_template(tmpl_file("fly.toml.eex"), "fly.toml", [dirname: dirname], opts)
-  end
-
-  def tmpl_file(priv_file) do
-    Path.join(:code.priv_dir(:ehelper), priv_file)
+    copy_template(
+      Mix.Template.get_priv_file("fly.toml.eex"),
+      "fly.toml",
+      [dirname: dirname],
+      opts
+    )
   end
 end

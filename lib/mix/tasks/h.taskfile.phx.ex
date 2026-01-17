@@ -22,10 +22,6 @@ defmodule Mix.Tasks.H.Taskfile.Phx do
       Mix.raise("Expected \"mix h.taskfile.phx\" without arguments, got: #{inspect(args)}")
     end
 
-    copy_template(tmpl_file("Taskfile.yml.phx.eex"), "Taskfile.yml", [], opts)
-  end
-
-  def tmpl_file(priv_file) do
-    Path.join(:code.priv_dir(:ehelper), priv_file)
+    copy_template(Mix.Template.get_priv_file("Taskfile.yml.phx.eex"), "Taskfile.yml", [], opts)
   end
 end

@@ -22,10 +22,6 @@ defmodule Mix.Tasks.H.Justfile do
       Mix.raise("Expected \"mix h.just\" without arguments, got: #{inspect(args)}")
     end
 
-    copy_template(tmpl_file("Justfile.eex"), "Justfile", [], opts)
-  end
-
-  def tmpl_file(priv_file) do
-    Path.join(:code.priv_dir(:ehelper), priv_file)
+    copy_template(Mix.Template.get_priv_file("Justfile.eex"), "Justfile", [], opts)
   end
 end

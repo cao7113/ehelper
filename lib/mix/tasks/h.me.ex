@@ -36,20 +36,18 @@ defmodule Mix.Tasks.H.Me do
     # todo: hello-world => Hello World
     dirname = File.cwd!() |> Path.basename() |> String.capitalize()
 
-    content = EEx.eval_file(tmpl_file("README.md.eex"), assigns: [dirname: dirname])
+    content =
+      EEx.eval_file(Mix.Template.get_priv_file("README.md.eex"), assigns: [dirname: dirname])
+
     target_file = "README.md"
 
     if opts[:dry] do
       shell = Mix.shell()
-      shell.info("## will create target fiel: #{target_file} contents as follows")
+      shell.info("# will create target file: #{target_file} contents as follows")
       shell.info(content)
     else
       opts = Keyword.take(opts, [:force, :quiet])
       create_file(target_file, content, opts)
     end
-  end
-
-  def tmpl_file(priv_file) do
-    Path.join(:code.priv_dir(:ehelper), priv_file)
   end
 end

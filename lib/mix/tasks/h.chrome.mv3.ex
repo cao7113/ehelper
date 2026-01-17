@@ -25,14 +25,10 @@ defmodule Mix.Tasks.H.Chrome.Mv3 do
     dirname = File.cwd!() |> Path.basename() |> String.capitalize()
 
     copy_template(
-      tmpl_file("chrome-extension-manifest.json.eex"),
+      Mix.Template.get_priv_file("chrome-extension-manifest.json.eex"),
       "manifest.json",
       [dirname: dirname],
       opts
     )
-  end
-
-  def tmpl_file(priv_file) do
-    Path.join(:code.priv_dir(:ehelper), priv_file)
   end
 end
