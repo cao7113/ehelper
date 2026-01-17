@@ -11,7 +11,6 @@ defmodule Mix.Tasks.H.Me do
   """
 
   use Mix.Task
-  import Mix.Generator
 
   @switches [
     force: :boolean,
@@ -27,6 +26,7 @@ defmodule Mix.Tasks.H.Me do
 
   @impl true
   def run(args) do
+    shell = Mix.shell()
     {opts, args} = OptionParser.parse!(args, strict: @switches, aliases: @aliases)
 
     if args != [] do
@@ -35,19 +35,20 @@ defmodule Mix.Tasks.H.Me do
 
     # todo: hello-world => Hello World
     dirname = File.cwd!() |> Path.basename() |> String.capitalize()
-
-    content =
-      EEx.eval_file(Mix.Template.get_priv_file("README.md.eex"), assigns: [dirname: dirname])
+    assigns = [dirname: dirname]
+    tmpl_file = Mix.Template.get_priv_file("README.md.eex")
 
     target_file = "README.md"
+    dry? = Keyword.get(opts, :dry, false)
 
-    if opts[:dry] do
-      shell = Mix.shell()
-      shell.info("# will create target file: #{target_file} contents as follows")
-      shell.info(content)
+    if dry? do
+      shell.info("# The following file would be generated: #{target_file}\n")
+
+      EEx.eval_file(tmpl_file, assigns: assigns)
+      |> shell.info()
     else
       opts = Keyword.take(opts, [:force, :quiet])
-      create_file(target_file, content, opts)
+      Mix.Generator.copy_template(tmpl_file, target_file, assigns, opts)
     end
   end
 end

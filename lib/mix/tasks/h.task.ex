@@ -3,16 +3,13 @@ defmodule Mix.Tasks.H.Task do
   use Mix.Task
   import Mix.Generator
 
-  @swithes [
-    dry: :boolean
-  ]
-  @aliases [
-    d: :dry
-  ]
+  @switches [dry: :boolean, verbose: :boolean, quiet: :boolean]
+  @aliases [d: :dry, v: :verbose, q: :quiet]
+
   @impl true
   def run(args) do
     shell = Mix.shell()
-    {opts, args} = OptionParser.parse_head!(args, strict: @swithes, aliases: @aliases)
+    {opts, args} = OptionParser.parse_head!(args, strict: @switches, aliases: @aliases)
 
     task_name =
       case args do
@@ -28,12 +25,11 @@ defmodule Mix.Tasks.H.Task do
       shortdoc: "TODO: shortdoc for #{task_name}"
     ]
 
-    dry = Keyword.get(opts, :dry)
-
+    dry? = Keyword.get(opts, :dry)
     tmpl_file = Mix.Template.get_priv_file("mix.task.eex")
     task_file = "lib/mix/tasks/#{task_name}.ex"
 
-    if dry do
+    if dry? do
       shell.info("# The following file would be generated: #{task_file}\n")
 
       EEx.eval_file(tmpl_file, assigns: assigns)

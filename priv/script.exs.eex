@@ -1,0 +1,12 @@
+#!/usr/bin/env elixir
+
+switches = [dry: :boolean, verbose: :boolean]
+aliases = [d: :dry, v: :verbose]
+sys_args = System.argv()
+{opts, args} = OptionParser.parse!(sys_args, switches: switches, aliases: aliases)
+if opts[:verbose] do
+  IO.inspect(opts, label: "options")
+  IO.inspect(args, label: "args")
+end
+
+IO.puts("## running script file: #{__ENV__.file}")

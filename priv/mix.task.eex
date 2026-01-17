@@ -2,8 +2,8 @@ defmodule Mix.Tasks.<%= @task_module %> do
   @shortdoc "<%= @shortdoc %>"
   use Mix.Task
 
-  @switches [dry: :boolean]
-  @aliases [d: :dry]
+  @switches [dry: :boolean, verbose: :boolean, quiet: :boolean]
+  @aliases [d: :dry, v: :verbose, q: :quiet]
 
   @impl true
   def run(args) do

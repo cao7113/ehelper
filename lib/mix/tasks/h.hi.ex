@@ -1,4 +1,4 @@
-defmodule Mix.Tasks.H.Test do
+defmodule Mix.Tasks.H.Hi do
   @shortdoc "Just test task"
   use Mix.Task
 
