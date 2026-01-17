@@ -5,6 +5,19 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v0.2.6](https://github.com/cao7113/ehelper/compare/v0.2.5...v0.2.6) (2026-01-17)
+
+
+
+
+### Bug Fixes:
+
+* update httpc channel code from req_client by Ryn Cao
+
+### Improvements:
+
+* add h.docker and h.task mix tasks by Ryn Cao
+
 ## [v0.2.5](https://github.com/cao7113/ehelper/compare/v0.2.4...v0.2.5) (2025-12-31)
 
 
