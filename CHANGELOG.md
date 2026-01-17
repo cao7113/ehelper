@@ -5,6 +5,15 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v0.2.7](https://github.com/cao7113/ehelper/compare/v0.2.6...v0.2.7) (2026-01-17)
+
+
+
+
+### Improvements:
+
+* add h.script task by Ryn Cao
+
 ## [v0.2.6](https://github.com/cao7113/ehelper/compare/v0.2.5...v0.2.6) (2026-01-17)
 
 

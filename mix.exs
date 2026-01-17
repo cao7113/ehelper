@@ -2,7 +2,7 @@ defmodule Ehelper.MixProject do
   use Mix.Project
 
   @app :ehelper
-  @version "0.2.6"
+  @version "0.2.7"
   @source_url "https://github.com/cao7113/ehelper"
 
   def project do
