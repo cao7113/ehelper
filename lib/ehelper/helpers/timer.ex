@@ -2,8 +2,8 @@ defmodule Ehelper.Timer do
   @moduledoc """
   - https://www.erlang.org/doc/apps/stdlib/timer.html
 
-  {:erlang.timestamp(), :os.timestamp()}
-  :timer.now_diff(t2, t1)
+  # {:erlang.timestamp(), :os.timestamp()}
+  # :timer.now_diff(t2, t1)
   """
 
   require Logger

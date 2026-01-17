@@ -33,6 +33,10 @@ tasks:
       - mix hex.publish --yes --replace
   pub.docs: mix hex.publish docs --yes
 
+  docs: mix docs
+  # https://www.erlang.org/doc/apps/inets/http_server.html#serving-files-from-the-command-line
+  sdoc: erl -S httpd serve doc
+
   ## Git ops
   ops.up: mix git_ops.release --yes && git push --follow-tags
   prj.info: mix git_ops.project_info

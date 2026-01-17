@@ -14,11 +14,14 @@ defmodule Ehelper.MixProject do
       # deps: deps(),
       deps: env_deps(Mix.env()),
       aliases: aliases(),
-      name: "ehelper",
       description: "Daily mix helper tasks",
+      package: package(),
+
+      # Docs
+      name: "Ehelper",
       source_url: @source_url,
       homepage_url: @source_url,
-      package: package()
+      docs: &docs/0
     ]
   end
 
@@ -43,7 +46,7 @@ defmodule Ehelper.MixProject do
       {:git_ops, "~> 2.9", only: [:dev], runtime: false, local_linking: true},
       # mix igniter.install git_ops
       {:igniter, "~> 0.7", only: [:dev, :test], local_linking: true},
-      {:ex_doc, "~> 0.39", only: :dev, runtime: false}
+      {:ex_doc, "~> 0.39", only: :dev, runtime: false, warn_if_outdated: true}
     ]
   end
 
@@ -62,6 +65,15 @@ defmodule Ehelper.MixProject do
     [
       # default_task: "eh",
       preferred_envs: [build: :prod, install: :prod, up: :prod]
+    ]
+  end
+
+  defp docs do
+    [
+      # The main page in the docs
+      # main: "MyApp",
+      # logo: "path/to/logo.png",
+      # extras: ["README.md"]
     ]
   end
 

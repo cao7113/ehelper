@@ -3,6 +3,7 @@
 ## observer
 
 - https://hexdocs.pm/elixir/debugging.html#observer
+- https://www.erlang.org/doc/apps/observer/observer_ug.html
 
 ## crash viewer
 

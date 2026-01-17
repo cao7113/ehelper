@@ -1,6 +1,4 @@
-# Hello Elixir
-
-Elixir & Erlang playground
+# Elixir links
 
 ## Links
 

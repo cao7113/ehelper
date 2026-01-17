@@ -27,7 +27,12 @@ install_opts = Keyword.take(opts, [:verbose, :force, :start_applications])
 {install_timing_ms, :ok} =
   :timer.tc(
     fn ->
-      Mix.install([:req_client], install_opts)
+      Mix.install(
+        [
+          :req_client
+        ],
+        install_opts
+      )
     end,
     :millisecond
   )

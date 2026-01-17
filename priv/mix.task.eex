@@ -1,0 +1,14 @@
+defmodule Mix.Tasks.<%= @task_module %> do
+  @shortdoc "<%= @shortdoc %>"
+  use Mix.Task
+
+  @switches [dry: :boolean]
+  @aliases [d: :dry]
+
+  @impl true
+  def run(args) do
+    shell = Mix.shell()
+    {opts, argv} = OptionParser.parse_head!(args, strict: @switches, aliases: @aliases)
+    shell.info("Todo: impl <%= @task_name %> with Options: #{inspect(opts)} Args: #{inspect(argv)}")
+  end
+end
