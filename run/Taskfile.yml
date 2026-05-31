@@ -1,0 +1,95 @@
+# https://taskfile.dev/usage/
+version: "3"
+vars:
+  PHX_NEW_LATEST_TAG: "1.8.0"
+
+# https://earthly.dev/blog/real-time-phoenix-elixir/
+# https://www.diegofreijo.com/blog/a-gentle-introduction-to-phoenix-liveview-and-tailwind
+tasks:
+  default: echo "Hi elixir world!"
+  # https://taskfile.dev/reference/templating/#string-slice-functions
+  hi: |
+    first_arg={{splitList " " .CLI_ARGS | first | default "abc"}}
+    echo first_arg=$first_arg
+
+  # APP_NAME=demo task phx.new.demo -- tmp-phx-demo
+  phx.new.demo: |
+    prjpath={{splitList " " .CLI_ARGS | first | default "tmp-phx-demo"}}
+    mkdir -p $(dirname $prjpath)
+    prjname=$(basename $prjpath)
+    appname="${prjname//-/_}"
+    appname=${APP_NAME:-demo}
+    echo prjpath=$prjpath appname=$appname
+    # exit
+    if [ -d $prjpath ]; then
+      echo "You should mannually run: rm -r $prjpath or STOP here!!!"
+      exit
+    fi
+    mix phx.new $prjpath --app $appname --verbose --no-install
+    cp .tool-versions $prjpath
+    cd $prjpath
+    mix deps.get
+    mix ecto.drop --force-drop
+    mix setup
+    git init
+    git add .
+    git commit -m "init phx.new"
+    mix eh.taskfile.phx
+    mix phx.gen.auth --live Accounts User users
+    mix deps.get
+    mix ecto.migrate
+    git add .
+    git commit -m "feat: mix phx.gen.auth Accounts User users"
+    # mix phx.gen.live Blog Post posts title:string body:text
+    mix release.init
+    mix phx.gen.release --docker
+
+  # https://hexdocs.pm/phoenix/json_and_apis.html#api-only-applications
+  # APP_NAME=hello task phx.new.api.only -- play/hello-phx-api-only
+  phx.new.api.only: |
+    prjpath={{splitList " " .CLI_ARGS | first | default "play/hello-phx-api-only"}}
+    mkdir -p $(dirname $prjpath)
+    prjname=$(basename $prjpath)
+    appname="${prjname//-/_}"
+    appname=${APP_NAME:-hello}
+    echo prjpath=$prjpath appname=$appname
+    # exit
+    if [ -d $prjpath ]; then
+      echo "You should mannually run: rm -r $prjpath or STOP here!!!"
+      exit
+    fi
+    mix phx.new $prjpath --app $appname --verbose --no-assets --no-html \
+      --no-mailer --no-gettext --no-ecto --no-install # --no-dashboard
+    cd $prjpath
+    mix eh.taskfile.phx
+    # mix release.init
+    # mix phx.gen.release --docker
+
+  phx.new.help.no.items: mix help phx.new | grep -- "\`--no-" | tee docs/phx.new.no-xxx.md
+
+  test.lv.board: |
+    prjpath=play/tmp-board
+    rm -fr $prjpath
+    mix phx.new $prjpath --app tmp_board --no-assets --no-html --no-mailer --no-gettext --no-ecto --install --no-dashboard
+    cd $prjpath
+    git init
+    git add .
+    git commit -m "Initial commit"
+    echo "=== tmp-board created"
+    mix phx.new .  --app tmp_board --no-assets --no-html --no-mailer --no-gettext --no-ecto --install
+
+  # Phoenix project generator phx.new
+  phx.new.info: mix phx.new --version
+  phx.new.setup: |
+    mix archive.install hex phx_new --force
+    task phx.new.info
+  phx.new.setup.rc: |
+    mix archive.install hex phx_new {{.PHX_NEW_LATEST_TAG}} --force
+    task phx.new.info
+
+  # Put files into repo to avoid loss!
+  g.st: git status Taskfile.yml README.md .tool-versions docs
+  g.add: git add Taskfile.yml docs
+  g.ci: |
+    git add Taskfile.yml docs
+    git commit -am "backup"

@@ -11,8 +11,12 @@ NOTE: mainly used as archive and global utils in .iex.exs, no other dependecies 
 ## Usage
 
 ```
-export MIX_DEBUG=1 
+export MIX_DEBUG=1
 mix h.hc https://api.github.com/repos/elixir-lang/elixir
+
+# global
+
+mise x elixir erlang -- mix h.hi
 ```
 
 ## Check ehelper archive in your project
@@ -38,3 +42,9 @@ mix up
 
 - https://github.com/membraneframework/bunch
 - [Other old ehelper, intresting?](https://github.com/philosophers-stone/ehelper)
+
+## Links
+
+- https://github.com/phoenixframework/phoenix
+- https://github.com/elixir-lang/elixir
+- https://elixir-lang.org/docs.html
