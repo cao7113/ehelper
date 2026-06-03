@@ -15,8 +15,6 @@ tasks:
     ls -l _build/*.ez
   up: mix up
 
-  # chmod +x run/**/*.exs
-  # chmod +x script/**/*.exs
   # iex -S mix test test/hello_elixir_test.exs:6 -b
   slow-test: mix test --slowest 10
   stale-test: mix test --stale
@@ -31,16 +29,18 @@ tasks:
 
   rel: mix release --overwrite --force
 
-  pub:
-    desc: publish hex package
-    env:
-      HEX_API_KEY: $HEX_API_KEY
-    cmds:
-      - mix hex.publish --yes --replace
-  pub.docs: mix hex.publish docs --yes
-  docs: mix docs
+  # pub:
+  #   # prefer to use CI
+  #   desc: publish hex package
+  #   cmds:
+  #     - mix hex.publish --yes --replace
+  #   env:
+  #     HEX_API_KEY: $HEX_API_KEY
+
+  doc: mix docs
+  doc.pub: mix hex.publish docs --yes
   # https://www.erlang.org/doc/apps/inets/http_server.html#serving-files-from-the-command-line
-  sdoc: erl -S httpd serve doc
+  doc.s: erl -S httpd serve doc
 
   ## Git ops
   ops.up: mix git_ops.release --yes && git push --follow-tags
@@ -50,13 +50,7 @@ tasks:
   deps: |
     mix do up + h.deps
   
+  ## Setup
   setup: |
     mise install
     mix deps.get
-
-    mix local.hex --force --if-missing
-    mix archive.install hex phx_new --force
-    
-  v: |
-    elixir -v 
-    # elixir --version

@@ -1,6 +1,6 @@
 defmodule Mix.Tasks.H.Docker do
   @moduledoc """
-  Get elixir docker image info
+  Get elixir docker-image info
 
   By default, the build uses whatever base image matches your development system’s active versions at generation time.
   extracted and customized from task: mix.gen.release
