@@ -5,6 +5,15 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v0.2.8](https://github.com/cao7113/ehelper/compare/v0.2.7...v0.2.8) (2026-07-10)
+
+
+
+
+### Bug Fixes:
+
+* use mise in github actions by Ryn Cao
+
 ## [v0.2.7](https://github.com/cao7113/ehelper/compare/v0.2.6...v0.2.7) (2026-01-17)
 
 
