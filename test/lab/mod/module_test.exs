@@ -1,7 +1,7 @@
 defmodule AMod do
   @modkey1 "val1"
 
-  require Logger
+  # require Logger
 
   def val1(), do: @modkey1
 

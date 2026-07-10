@@ -54,3 +54,4 @@ tasks:
   setup: |
     mise install
     mix deps.get
+    mix test

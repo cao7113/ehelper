@@ -9,6 +9,7 @@ defmodule Mix.Tasks.H.Script do
   def run(args) do
     shell = Mix.shell()
     {opts, argv} = OptionParser.parse_head!(args, strict: @switches, aliases: @aliases)
+    # todo give hint to input a script file if not!!!
     script_file = List.first(argv) || "run/hi.exs"
 
     script_file =
