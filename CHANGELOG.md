@@ -5,6 +5,15 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v0.2.9](https://github.com/cao7113/ehelper/compare/v0.2.8...v0.2.9) (2026-07-11)
+
+
+
+
+### Improvements:
+
+* clean dead DepLink code by Ryn Cao
+
 ## [v0.2.8](https://github.com/cao7113/ehelper/compare/v0.2.7...v0.2.8) (2026-07-10)
 
 
