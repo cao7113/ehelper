@@ -26,6 +26,9 @@ jobs:
           # 开启 mise 自带的工具缓存（加速后续构建）
           cache: true 
 
+      - name: Install Hex
+        run: mix local.hex --force
+
       - name: Restore dependencies cache
         uses: actions/cache@v4
         with:
