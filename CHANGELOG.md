@@ -2,6 +2,15 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v0.2.10 - 2026-09-28
+#### Bug Fixes
+- add h.pkg.clone - (81e5c38) - Ryn Cao
+#### Miscellaneous Chores
+- adapt changelog for cog - (ed9a61b) - Ryn Cao
+- init cog config - (8f1d1cd) - Ryn Cao
+
+- - -
+
 ## [v0.2.9](https://github.com/cao7113/ehelper/compare/v0.2.8...v0.2.9) (2026-07-11)
 
 
