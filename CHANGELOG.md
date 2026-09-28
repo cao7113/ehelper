@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v0.2.12 - 2026-09-28
+#### Bug Fixes
+- mix.exs @version from VERSION file - (82566ab) - Ryn Cao
+
+- - -
+
 ## v0.2.11 - 2026-09-28
 #### Miscellaneous Chores
 - clean git_ops deps - (6e922e0) - Ryn Cao
