@@ -26,8 +26,8 @@ package metadata, using the local cache when available and fetching from Hex oth
 
 ```bash
 mix h.pkg
-mix h.pkg info plug
-mix h.pkg info plug --force
+mix h.pkg.info plug
+mix h.pkg.info plug --force
 mix h.pkg.open plug
 mix h.pkg.open plug --kind docs
 ```

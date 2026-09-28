@@ -21,8 +21,9 @@ tasks:
   # https://hexdocs.pm/mix/Mix.Tasks.Test.html#module-file-system-watchers
   smart-test: fswatch lib test | mix test --listen-on-stdin --stale
 
+  # httpc clinet source copy
   hc.copy: |
-    mix h.hc.mget {{.httpcSrcUrl}} > lib/ehelper/httpc.ex
+    mix h.hc.mget {{.httpcSrcUrl}} > lib/httpc.ex
     mix format
   hc.get: 
     mix h.hc.mget {{.httpcSrcUrl}}
@@ -41,11 +42,6 @@ tasks:
   doc.pub: mix hex.publish docs --yes
   # https://www.erlang.org/doc/apps/inets/http_server.html#serving-files-from-the-command-line
   doc.s: erl -S httpd serve doc
-
-  ## Git ops
-  ops.up: mix git_ops.release --yes && git push --follow-tags
-  prj.info: mix git_ops.project_info
-  ops.init: mix git_ops.release --initial
 
   deps: |
     mix do up + h.deps

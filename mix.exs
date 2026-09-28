@@ -42,10 +42,7 @@ defmodule Ehelper.MixProject do
   # specifying :decimal is the same as {:decimal, ">= 0.0.0"}
   defp deps do
     [
-      {:git_ops, "~> 2.9", only: [:dev], runtime: false},
-      # mix igniter.install git_ops
-      {:igniter, "~> 0.7", only: [:dev, :test]},
-      {:ex_doc, "~> 0.39", only: :dev, runtime: false}
+      # {:ex_doc, "~> 0.39", only: :dev, runtime: false}
     ]
   end
 
@@ -83,7 +80,7 @@ defmodule Ehelper.MixProject do
         "GitHub" => @source_url,
         "Docs" => "https://hexdocs.pm/ehelper"
       },
-      files: ["lib", "priv", "mix.exs", "mix.lock", "README.md"],
+      files: ["lib", "priv", "mix.exs", "mix.lock", "README.md", "VERSION"],
       licenses: ["Apache-2.0"],
       maintainers: ["cao7113"]
     ]
