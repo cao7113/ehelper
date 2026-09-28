@@ -6,18 +6,8 @@ defmodule Mix.Tasks.H.Hi do
   def run(_args) do
     shell = Mix.shell()
 
-    vsn =
-      case Application.spec(:ehelper, :vsn) do
-        nil ->
-          :ok = Application.load(:ehelper)
-          Application.spec(:ehelper, :vsn)
-
-        version ->
-          version
-      end
-
     ~s"""
-    ## Test task from ehelper-#{vsn}
+    ## Test task from ehelper
 
     Mix env: #{Mix.env()}, target: #{Mix.target()}
     """
