@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v0.2.16 - 2026-09-28
+#### Miscellaneous Chores
+- add h.vsn - (cd310e8) - Ryn Cao
+
+- - -
+
 ## v0.2.15 - 2026-09-28
 #### Miscellaneous Chores
 - add vsn on h.hi - (3ee5019) - Ryn Cao
