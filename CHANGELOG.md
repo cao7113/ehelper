@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v0.2.13 - 2026-09-28
+#### Miscellaneous Chores
+- fix missing mix hex.publish task - (5c69082) - Ryn Cao
+
+- - -
+
 ## v0.2.12 - 2026-09-28
 #### Bug Fixes
 - mix.exs @version from VERSION file - (82566ab) - Ryn Cao
