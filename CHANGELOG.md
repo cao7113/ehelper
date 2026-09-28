@@ -1,10 +1,7 @@
-# Change Log
+# Changelog
+All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
-All notable changes to this project will be documented in this file.
-See [Conventional Commits](Https://conventionalcommits.org) for commit guidelines.
-
-<!-- changelog -->
-
+- - -
 ## [v0.2.9](https://github.com/cao7113/ehelper/compare/v0.2.8...v0.2.9) (2026-07-11)
 
 
