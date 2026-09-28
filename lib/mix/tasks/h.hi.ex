@@ -5,7 +5,16 @@ defmodule Mix.Tasks.H.Hi do
   @impl true
   def run(_args) do
     shell = Mix.shell()
-    vsn = Application.spec(:ehelper, :vsn)
+
+    vsn =
+      case Application.spec(:ehelper, :vsn) do
+        nil ->
+          :ok = Application.load(:ehelper)
+          Application.spec(:ehelper, :vsn)
+
+        version ->
+          version
+      end
 
     ~s"""
     ## Test task from ehelper-#{vsn}

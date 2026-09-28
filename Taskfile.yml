@@ -28,7 +28,9 @@ tasks:
   hc.get: 
     mix h.hc.mget {{.httpcSrcUrl}}
 
-  rel: mix release --overwrite --force
+  rel: |
+    # cog bump -p
+    cog bump --auto
 
   # pub:
   #   # prefer to use CI
