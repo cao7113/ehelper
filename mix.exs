@@ -2,8 +2,8 @@ defmodule Ehelper.MixProject do
   use Mix.Project
 
   @app :ehelper
-  @version "0.2.9"
   @source_url "https://github.com/cao7113/ehelper"
+  @version File.read!("VERSION") |> String.trim()
 
   def project do
     [
