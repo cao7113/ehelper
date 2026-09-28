@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v0.2.14 - 2026-09-28
+#### Miscellaneous Chores
+- fix missing ex_doc dep, required by hex publish - (80650fd) - Ryn Cao
+
+- - -
+
 ## v0.2.13 - 2026-09-28
 #### Miscellaneous Chores
 - fix missing mix hex.publish task - (5c69082) - Ryn Cao
