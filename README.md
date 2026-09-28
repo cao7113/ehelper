@@ -19,6 +19,21 @@ mix h.hc https://api.github.com/repos/elixir-lang/elixir
 mise x elixir erlang -- mix h.hi
 ```
 
+## Hex package information
+
+`mix h.pkg` lists the Hex package helper tasks. `mix h.pkg info PACKAGE` displays
+package metadata, using the local cache when available and fetching from Hex otherwise.
+
+```bash
+mix h.pkg
+mix h.pkg info plug
+mix h.pkg info plug --force
+mix h.pkg.open plug
+mix h.pkg.open plug --kind docs
+```
+
+The cache defaults to `~/.cache/hex-pkgs`; set `MIX_PKGS_INFO_ROOT` to use another directory. `--force` refreshes the cached response. `Mix.PkgCache.get_info/2` is the cached programmatic entry point; `Mix.PkgInfo.fetch/2` fetches directly and returns `{:ok, info}` or `{:error, reason}`.
+
 ## Check ehelper archive in your project
 
 ```

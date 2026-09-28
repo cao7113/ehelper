@@ -1,40 +1,43 @@
 defmodule Mix.Tasks.H.Pkg do
-  @shortdoc "Show hex dep meta-info from hex.pm"
+  @shortdoc "List Hex package helper tasks"
+
   @moduledoc """
   #{@shortdoc}.
 
-  This task fetches and displays dependency information from hex.pm.
+  Run `mix h.pkg` to list the package helper tasks, or pass a subtask name to
+  invoke it directly.
 
-  Like mix hex.info ehelper
+  ## Examples
+
+      mix h.pkg
+      mix h.pkg info req
+      mix h.pkg clone req _local
+      mix h.pkg open req
   """
 
   use Mix.Task
 
-  alias Mix.PkgInfo
-
-  @switches [
-    force: :boolean,
-    file_cache: :boolean
-  ]
-
-  @aliases [
-    f: :force,
-    c: :file_cache
-  ]
-
   @impl true
+  @doc false
   def run(args) do
-    {opts, args, _error} = OptionParser.parse(args, switches: @switches, aliases: @aliases)
-    pkg = args |> List.first()
+    case args do
+      [] ->
+        general()
 
-    pkg =
-      if pkg do
-        pkg |> String.trim()
-      else
-        Mix.raise("Require dependency name!")
-      end
+      [argument] when argument in ["-h", "--help"] ->
+        general()
 
-    info = PkgInfo.get_info(pkg, opts)
-    info |> Ehelper.pp()
+      [subtask | rest] ->
+        if String.starts_with?(subtask, "-") do
+          Mix.raise("First argument should be a package subtask, got #{inspect(subtask)}")
+        else
+          Mix.Task.run("h.pkg.#{subtask}", rest)
+        end
+    end
+  end
+
+  defp general do
+    Mix.shell().info("## Hex package tasks (h.pkg.<subtask> or h.pkg subtask)\n")
+    Mix.Tasks.Help.run(["--search", "h.pkg."])
   end
 end

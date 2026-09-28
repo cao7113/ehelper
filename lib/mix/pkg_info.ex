@@ -1,13 +1,38 @@
 defmodule Mix.PkgInfo do
   @moduledoc """
-  Dep info
+  Hex package metadata and helpers for fetching or interpreting it.
 
-  Hex Code  https://github.com/hexpm/hex
-  Hex API:  https://hex.pm/api/packages/ecto
-  Hex Spec: https://hexdocs.pm/hex_core/readme.html
+  `Mix.PkgInfo` represents package information returned by the public Hex API.
+  Use `fetch/2` to fetch package information directly from Hex.
+
+  The struct fields map to Hex package metadata: `app`, `desc`,
+  `latest_version`, `links`, `docs_url`, `pkg_url`, `api_url`, and `downloads`.
+
+    ## Examples
+
+    Fetch the `req` package from Hex:
+
+      iex> {:ok, req} = Mix.PkgInfo.fetch("req")
+      iex> req.app
+      "req"
+
+    Pass `raw: true` to receive the decoded Hex API response without converting
+    it to a `Mix.PkgInfo` struct. Network options such as `timeout`, `debug`,
+    and `proxy` are also accepted:
+
+      iex> {:ok, req} = Mix.PkgInfo.fetch("req", raw: true)
+      iex> req["name"]
+      "req"
+      iex> {:ok, req} = Mix.PkgInfo.fetch("req", timeout: 10_000)
+      iex> req.app
+      "req"
+
+    Use `fetch!/2` when a failed request should raise instead of returning an
+    error tuple:
+
+      req = Mix.PkgInfo.fetch!("req")
+
   """
-  @compile {:no_warn_undefined, Hex}
-  @compile {:no_warn_undefined, Hex.API.Package}
 
   defstruct app: nil,
             desc: "",
@@ -16,63 +41,69 @@ defmodule Mix.PkgInfo do
             docs_url: nil,
             pkg_url: nil,
             api_url: nil,
-            downloads: %{},
-            channel: nil,
-            cache_path: nil
+            downloads: %{}
 
-  def get_info(pkg, opts \\ []) do
-    pkg = pkg |> to_string()
+  @type t :: %__MODULE__{
+          app: String.t() | nil,
+          desc: String.t(),
+          latest_version: String.t() | nil,
+          links: map(),
+          docs_url: String.t() | nil,
+          pkg_url: String.t() | nil,
+          api_url: String.t() | nil,
+          downloads: map()
+        }
 
-    force_fetch = Keyword.get(opts, :force, false)
-    cache_path = dep_cache_path(pkg)
+  @doc """
+  Fetch package information directly from Hex, without using the local cache.
 
-    {channel, body} =
-      if File.exists?(cache_path) and not force_fetch do
-        {:cached, JSON.decode!(File.read!(cache_path))}
-      else
-        IO.puts("# [#{pkg}] loading pkg info into: #{cache_path}")
-        start = DateTime.utc_now()
-        # use :timer.tc
+  Set `raw: true` to return the decoded Hex API response map instead of a
+  `Mix.PkgInfo` struct. This option is also supported by `fetch!/2`.
 
-        # todo 1 only ensure :hex loaded 2 use hex api directly?
-        Mix.Local.append_archives()
-        Application.ensure_all_started(:hex)
+  Supported options:
 
-        # todo debug
-        {:ok, {200, _headers, body}} = Hex.API.Package.get(nil, pkg, nil)
+    * `:raw` - return the decoded API response map (default: `false`).
+    * `:timeout` - request timeout in milliseconds or `:infinity`.
+    * `:debug` - enable HTTP client debug logging (default: `false`).
+    * `:proxy` - use the proxy configuration from the environment (`:env`), or
+      disable proxy use (`false` or `:no`).
+  """
+  @spec fetch(String.t() | atom(), keyword()) ::
+          {:ok, t() | map()} | {:error, term()}
+  def fetch(pkg, opts \\ []) do
+    {raw?, opts} = Keyword.pop(opts, :raw, false)
 
-        file_cache = Keyword.get(opts, :file_cache, true)
+    with {:ok, body} <- Mix.PkgInfo.Fetcher.fetch(pkg, opts) do
+      if raw?, do: {:ok, body}, else: {:ok, from_api_body(body)}
+    end
+  end
 
-        if file_cache do
-          File.write!(cache_path, JSON.encode!(body))
-        else
-          IO.puts("## [#{pkg}] not cached in path: #{cache_path}")
-          {:fetched, body}
-        end
+  @doc "Fetch package information directly from Hex, raising if the request fails."
+  @spec fetch!(String.t() | atom(), keyword()) :: t() | map()
+  def fetch!(pkg, opts \\ []) do
+    case fetch(pkg, opts) do
+      {:ok, info} ->
+        info
 
-        du = DateTime.diff(DateTime.utc_now(), start, :millisecond)
-        IO.puts("# [#{pkg}] fetched pkg info taken: #{du} ms")
-        {:fetched, body}
-      end
+      {:error, reason} ->
+        raise "Unable to fetch Hex package #{pkg}: #{inspect(reason)}"
+    end
+  end
 
-    body =
-      body
-      |> Enum.map(fn {k, v} ->
-        {k |> String.to_atom(), v}
-      end)
-      |> Map.new()
+  @doc "Build package information from a decoded Hex API response."
+  @spec from_api_body(map()) :: t()
+  def from_api_body(body) when is_map(body) do
+    meta = Map.get(body, "meta", %{})
 
     %__MODULE__{
-      app: body.name,
-      desc: body.meta["description"],
-      latest_version: body.latest_version,
-      links: body.meta["links"],
-      docs_url: body.docs_html_url,
-      pkg_url: body.html_url,
-      api_url: body.url,
-      downloads: body.downloads,
-      channel: channel,
-      cache_path: "file://" <> cache_path
+      app: Map.get(body, "name"),
+      desc: Map.get(meta, "description", ""),
+      latest_version: Map.get(body, "latest_version"),
+      links: Map.get(meta, "links", %{}),
+      docs_url: Map.get(body, "docs_html_url"),
+      pkg_url: Map.get(body, "html_url"),
+      api_url: Map.get(body, "url"),
+      downloads: Map.get(body, "downloads", %{})
     }
   end
 
@@ -84,61 +115,32 @@ defmodule Mix.PkgInfo do
     docs_url || links["Docs"] || links["Changelog"]
   end
 
-  def dep_cache_path(name) when is_binary(name) do
-    Path.join(dep_cache_root(), "#{name}.json")
+  defmodule Fetcher do
+    @moduledoc "Fetch package metadata from the public Hex API."
+
+    alias ReqClient.Channel.Httpc
+
+    @api_url "https://hex.pm/api/packages/"
+
+    def fetch(pkg, opts \\ []) do
+      url = @api_url <> URI.encode(to_string(pkg))
+
+      http_opts =
+        opts
+        |> Keyword.take([:timeout, :debug, :proxy])
+        |> Keyword.put(:headers, %{"accept" => "application/json"})
+        |> Keyword.put(:content_wise_resp_body, true)
+
+      case Httpc.get(url, http_opts) do
+        {:ok, %{status: 200, body: body}} when is_map(body) ->
+          {:ok, body}
+
+        {:ok, %{status: status, body: body}} ->
+          {:error, {:http_status, status, body}}
+
+        {:error, reason} ->
+          {:error, reason}
+      end
+    end
   end
-
-  def dep_cache_root(opts \\ []) do
-    root =
-      System.get_env("MIX_PKGS_INFO_ROOT", "~/dev/_repos/mix.pkgs.info")
-      |> Path.expand()
-
-    mk = Keyword.get(opts, :make_dir, true)
-    if mk, do: File.mkdir_p!(root)
-
-    root
-  end
-
-  # %{
-  #   "configs" => %{
-  #     "erlang.mk" => "dep_ehelper = hex 0.1.6",
-  #     "mix.exs" => "{:ehelper, \"~> 0.1.6\"}",
-  #     "rebar.config" => "{ehelper, \"0.1.6\"}"
-  #   },
-  #   "docs_html_url" => "https://hexdocs.pm/ehelper/",
-  #   "downloads" => %{"all" => 373, "recent" => 69},
-  #   "html_url" => "https://hex.pm/packages/ehelper",
-  #   "inserted_at" => "2024-06-14T08:50:02Z",
-  #   "latest_stable_version" => "0.1.6",
-  #   "latest_version" => "0.1.6",
-  #   "meta" => %{
-  #     "description" => "Daily mix helper tasks",
-  #     "licenses" => ["Apache-2.0"],
-  #     "links" => %{
-  #       "Docs" => "https://hexdocs.pm/ehelper",
-  #       "GitHub" => "https://github.com/cao7113/ehelper"
-  #     },
-  #     "maintainers" => []
-  #   },
-  #   "name" => "ehelper",
-  #   "owners" => [
-  #     %{
-  #       "email" => "cao7113@hotmail.com",
-  #       "url" => "https://hex.pm/api/users/cao7113",
-  #       "username" => "cao7113"
-  #     }
-  #   ],
-  #   "releases" => [
-  #     %{
-  #       "has_docs" => true,
-  #       "inserted_at" => "2025-07-16T10:29:57Z",
-  #       "url" => "https://hex.pm/api/packages/ehelper/releases/0.1.6",
-  #       "version" => "0.1.6"
-  #     }
-  #   ],
-  #   "repository" => "hexpm",
-  #   "retirements" => %{},
-  #   "updated_at" => "2025-07-16T10:30:00Z",
-  #   "url" => "https://hex.pm/api/packages/ehelper"
-  # }
 end

@@ -39,8 +39,9 @@ defmodule Mix.Tasks.H.Docker do
     otp_vsn = opts[:otp] || otp_vsn()
     debian_vsn = opts[:debian] || debian_vsn()
 
+    bob_url =
+      "https://bob.hex.pm/docker?repo=hexpm%2Felixir&elixir_version=#{elixir_vsn}&erlang_version=#{otp_vsn}&os=debian&os_version=trixie"
 
-    bob_url = "https://bob.hex.pm/docker?repo=hexpm%2Felixir&elixir_version=#{elixir_vsn}&erlang_version=#{otp_vsn}&os=debian&os_version=trixie"
     IO.puts("# Bob url: #{bob_url}")
 
     tag_name = "#{elixir_vsn}-erlang-#{otp_vsn}-debian-#{debian_vsn}-"
@@ -50,7 +51,6 @@ defmodule Mix.Tasks.H.Docker do
 
     hub_url = "https://hub.docker.com/r/hexpm/elixir/tags?name=#{tag_name}"
     IO.puts("# Hub page url: #{hub_url}")
-
 
     verbose = Keyword.get(opts, :verbose, false)
     req_opts = [headers: %{"content-type" => "application/json"}, timing: true, debug: verbose]

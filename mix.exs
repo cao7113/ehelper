@@ -42,7 +42,7 @@ defmodule Ehelper.MixProject do
   # specifying :decimal is the same as {:decimal, ">= 0.0.0"}
   defp deps do
     [
-      {:git_ops, "~> 2.9", only: [:dev], runtime: false,},
+      {:git_ops, "~> 2.9", only: [:dev], runtime: false},
       # mix igniter.install git_ops
       {:igniter, "~> 0.7", only: [:dev, :test]},
       {:ex_doc, "~> 0.39", only: :dev, runtime: false}

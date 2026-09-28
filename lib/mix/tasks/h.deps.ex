@@ -13,6 +13,8 @@ defmodule Mix.Tasks.H.Deps do
   """
 
   use Mix.Task
+
+  alias Mix.PkgCache
   alias Mix.PkgInfo
 
   @switches [
@@ -105,7 +107,7 @@ defmodule Mix.Tasks.H.Deps do
     |> Enum.sort_by(& &1.app)
     |> Enum.map(fn pkg ->
       Task.async(fn ->
-        PkgInfo.get_info(pkg.app, info_opts)
+        PkgCache.get_info(pkg.app, info_opts)
       end)
     end)
     |> Task.await_many()

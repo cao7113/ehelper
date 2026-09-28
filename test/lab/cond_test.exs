@@ -33,8 +33,6 @@ defmodule CondTest do
   #   assert a == :error
   # end
 
-
-
   # test "try with with else" do
   #   opts = %{width: 10}
 

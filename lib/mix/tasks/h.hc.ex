@@ -4,7 +4,7 @@ defmodule Mix.Tasks.H.Hc do
   @moduledoc """
   #{@shortdoc}.
 
-  use httpc client to get a resource
+  Use httpc-client to get a resource
   """
 
   use Mix.Task

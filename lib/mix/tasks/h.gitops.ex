@@ -2,7 +2,7 @@ defmodule Mix.Tasks.H.Gitops do
   @shortdoc "Show git_ops info"
   use Mix.Task
 
-  alias Mix.PkgInfo
+  alias Mix.PkgCache
 
   # @requirements ["app.config"]
   # @compile {:no_warn_undefined, GitOps.Config}
@@ -10,7 +10,7 @@ defmodule Mix.Tasks.H.Gitops do
   @impl true
   def run(_args) do
     shell = Mix.shell()
-    pkg_info = PkgInfo.get_info("igniter", [])
+    pkg_info = PkgCache.get_info("igniter", [])
     lver = Version.parse!(pkg_info.latest_version)
     requirement = "~> #{lver.major}.#{lver.minor}"
 
