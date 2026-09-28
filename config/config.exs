@@ -1,9 +1,5 @@
 import Config
 
-if config_env() == :dev do
-  import_config("git_ops.exs")
-end
-
 config :ehelper, :test, :test_value_from_config_file
 
 ## config logger app https://hexdocs.pm/logger/1.17.0/Logger.html#module-boot-configuration
