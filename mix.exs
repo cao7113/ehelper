@@ -42,7 +42,7 @@ defmodule Ehelper.MixProject do
   # specifying :decimal is the same as {:decimal, ">= 0.0.0"}
   defp deps do
     [
-      # {:ex_doc, "~> 0.39", only: :dev, runtime: false}
+      {:ex_doc, "~> 0.39", only: :dev, runtime: false}
     ]
   end
 
