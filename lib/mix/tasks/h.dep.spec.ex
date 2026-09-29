@@ -1,14 +1,23 @@
 defmodule Mix.Tasks.H.Dep.Spec do
-  @shortdoc "Show project locked-deps spec"
+  @shortdoc "Show spec for one dependency"
 
   @moduledoc """
   #{@shortdoc}.
 
-  ## Example
-  - mix h.dep.spec req
+  ## Examples
 
-  ## Options:
-  - env_target: use current env and target
+      mix h.dep.spec req
+      mix h.dep.spec plug --env-target
+      mix h.dep.spec req -e
+
+  The dependency name must exactly match the dependency application's name,
+  including case. The output omits dependency lists and loaded module names,
+  replacing those fields with `:skipped`.
+
+  ## Options
+
+    * `--env-target`, `-e` - converge dependencies for the current environment
+      and target instead of using the default dependency set.
   """
 
   use Mix.Task
@@ -20,26 +29,42 @@ defmodule Mix.Tasks.H.Dep.Spec do
   def run(args) do
     Mix.Project.get!()
 
-    {opts, names} = OptionParser.parse!(args, strict: @switches, aliases: @aliases)
-    if names == [], do: Mix.raise("require dep-app names like: mix h.deps.spec req plug")
+    {opts, dep_names} = OptionParser.parse!(args, strict: @switches, aliases: @aliases)
+
+    dep_name =
+      case dep_names do
+        [dep_name] -> dep_name
+        _ -> Mix.raise("require exactly one dep-app name like: mix h.dep.spec req")
+      end
+
     loaded_opts = if opts[:env_target], do: [env: Mix.env(), target: Mix.target()], else: []
 
     Mix.Dep.Converger.converge(loaded_opts)
-    |> Enum.filter(fn %{app: dep_app} ->
-      dep_app = Atom.to_string(dep_app)
+    |> Enum.find(fn %{app: dep_app} ->
+      Atom.to_string(dep_app) == dep_name
+    end)
+    |> case do
+      nil ->
+        Mix.shell().error("Dependency #{dep_name} not found in the project.")
 
-      Enum.any?(names, fn n ->
-        String.contains?(dep_app, n)
-      end)
-    end)
-    |> Enum.map(fn dep ->
-      dep
-      |> Map.from_struct()
-      |> put_in([:deps], [:skipped])
-      |> put_in([:opts, :app_properties, :modules], [:skipped])
-      |> Map.to_list()
-      |> Enum.sort()
-    end)
-    |> Ehelper.pp()
+      dep ->
+        dep
+        |> Map.from_struct()
+        |> Map.put(:deps, [:skipped])
+        |> case do
+          %{scm: Hex.SCM} = info ->
+            info
+            |> put_in([:opts, :app_properties, :modules], [:skipped])
+
+          %{scm: Mix.SCM.Git} = info ->
+            info
+
+          _ = info ->
+            info
+        end
+        |> Map.to_list()
+        |> Enum.sort()
+        |> Ehelper.pp()
+    end
   end
 end

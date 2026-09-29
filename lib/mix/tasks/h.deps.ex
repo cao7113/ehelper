@@ -1,15 +1,30 @@
 defmodule Mix.Tasks.H.Deps do
-  @shortdoc "Show project deps info friendly"
+  @shortdoc "Show dependency metadata and Hex package links"
 
   @moduledoc """
   #{@shortdoc}.
 
-  Options:
-  - search: search dependencies by name or description
-  - env-target: load dependencies for the current environment and target
-  - top-only: include top-level only deps
-  - all:      include all deps, exclusive with top-only
-  - force: force fetching of dependency information
+  By default, lists top-level dependencies. Package metadata is loaded from the
+  local cache or fetched from Hex. If metadata for a package cannot be loaded,
+  the task prints a warning for that package and continues with the rest.
+
+  ## Examples
+
+      mix h.deps
+      mix h.deps --search plug
+      mix h.deps --all
+      mix h.deps --force --env-target
+
+  ## Options
+
+    * `-s`, `--search TERM` - filter by a case-insensitive whole word or phrase
+      in the dependency name.
+    * `-t`, `--top-only` - show only top-level dependencies (the default).
+    * `-a`, `--all` - include transitive dependencies; cannot be combined with
+      `--top-only`.
+    * `-e`, `--env-target` - converge dependencies for the current environment
+      and target.
+    * `-f`, `--force` - fetch fresh package metadata from Hex, bypassing cache.
   """
 
   use Mix.Task
@@ -85,11 +100,7 @@ defmodule Mix.Tasks.H.Deps do
         end
 
       should_include =
-        if search do
-          (String.contains?(desc, search) || String.contains?(app, search)) && should_include
-        else
-          should_include
-        end
+        should_include && matches_search?(app, search)
 
       if should_include do
         item = %{
@@ -99,7 +110,7 @@ defmodule Mix.Tasks.H.Deps do
           top_level: top_level
         }
 
-        acc ++ [item]
+        [item | acc]
       else
         acc
       end
@@ -107,30 +118,40 @@ defmodule Mix.Tasks.H.Deps do
     |> Enum.sort_by(& &1.app)
     |> Enum.map(fn pkg ->
       Task.async(fn ->
-        PkgCache.get_info(pkg.app, info_opts)
+        fetch_pkg_info(pkg.app, info_opts)
       end)
     end)
     |> Task.await_many()
-    |> Enum.with_index(fn dep, idx ->
-      info = get_dep_doc(dep, idx)
-      shell.info(info)
+    |> Enum.reduce(0, fn
+      {:ok, dep}, idx ->
+        shell.info(get_dep_doc(dep, idx))
+        idx + 1
+
+      {:error, pkg_app, reason}, idx ->
+        shell.error("Skipping #{pkg_app}: could not load package metadata (#{reason})")
+        idx
     end)
+  end
+
+  defp fetch_pkg_info(pkg_app, info_opts) do
+    {:ok, PkgCache.get_info(pkg_app, info_opts)}
+  rescue
+    error ->
+      {:error, pkg_app, Exception.message(error)}
+  catch
+    kind, reason ->
+      {:error, pkg_app, "#{kind}: #{inspect(reason)}"}
+  end
+
+  def matches_search?(_app, nil), do: true
+
+  def matches_search?(app, search) do
+    pattern = Regex.compile!("(?<![\\p{L}\\p{N}])#{Regex.escape(search)}(?![\\p{L}\\p{N}])", "iu")
+
+    Regex.match?(pattern, app)
   end
 
   def get_dep_doc(%PkgInfo{} = dep, idx) do
     "##{idx + 1} #{dep.app} (#{dep.latest_version})\n#{dep.desc}\n- Docs: #{PkgInfo.docs_url(dep)}\n- Code: #{PkgInfo.github_url(dep)}\n- Pkg.: #{dep.pkg_url}\n- API.: #{dep.api_url}\n"
   end
-
-  # %Mix.Dep{
-  #   requirement: nil,
-  #   extra: [],
-  #   from: nil,
-  #   system_env: [],
-  #   manager: :mix,
-  #   deps: [],
-  #   top_level: true,
-  #   status: {:ok, "1.4.44"},
-  #   opts: [app_properties: [vsn: ~c""], description: ~c""],
-  #   app: app
-  # }
 end
