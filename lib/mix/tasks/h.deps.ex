@@ -29,8 +29,7 @@ defmodule Mix.Tasks.H.Deps do
 
   use Mix.Task
 
-  alias Mix.PkgCache
-  alias Mix.PkgInfo
+  alias Mix.DepInfo
 
   @switches [
     force: :boolean,
@@ -53,72 +52,37 @@ defmodule Mix.Tasks.H.Deps do
     Mix.Project.get!()
 
     {opts, _} = OptionParser.parse!(args, strict: @switches, aliases: @aliases)
-
-    shell = Mix.shell()
-    set_all? = Keyword.has_key?(opts, :all)
-    set_top? = Keyword.has_key?(opts, :top_only)
+    set_all? = Keyword.get(opts, :all, false)
+    set_top? = Keyword.get(opts, :top_only, true)
 
     top_only =
       cond do
-        set_all? && set_top? -> Mix.raise("Use one --all or --top-only, not: #{opts |> inspect}!")
-        set_all? -> !Keyword.get(opts, :all)
-        set_top? -> Keyword.get(opts, :top_only)
-        true -> true
+        set_all? && set_top? ->
+          Mix.raise("Use --all or --top-only, not both: #{opts |> inspect}!")
+
+        set_all? ->
+          false
+
+        true ->
+          true
       end
 
     search = Keyword.get(opts, :search)
-    conver_opts = if opts[:env_target], do: [env: Mix.env(), target: Mix.target()], else: []
     app = Mix.Project.config()[:app]
 
-    shell.info("## #{app} deps info\n")
+    shell = Mix.shell()
+    shell.info("## #{app}-#{Mix.Project.config()[:version]} deps info\n")
 
     info_opts = Keyword.take(opts, [:force])
 
-    Mix.Dep.Converger.converge(conver_opts)
-    |> Enum.reduce([], fn dep, acc ->
-      %Mix.Dep{
-        top_level: top_level,
-        opts: opts,
-        app: app
-      } = dep
-
-      app_props =
-        opts
-        |> Keyword.get(:app_properties, [])
-        |> Keyword.take([:vsn, :description])
-        |> Map.new()
-
-      app = app |> to_string()
-      desc = Map.get(app_props, :description, "no description") |> to_string()
-      vsn = Map.get(app_props, :vsn, "unknown") |> to_string()
-
-      should_include =
-        if top_only do
-          top_level
-        else
-          true
-        end
-
-      should_include =
-        should_include && matches_search?(app, search)
-
-      if should_include do
-        item = %{
-          app: app,
-          desc: desc,
-          vsn: vsn,
-          top_level: top_level
-        }
-
-        [item | acc]
-      else
-        acc
-      end
+    DepInfo.list(env_target: opts[:env_target])
+    |> Enum.filter(fn dep ->
+      (not top_only or dep.top_level) and matches_search?(to_string(dep.app), search)
     end)
     |> Enum.sort_by(& &1.app)
     |> Enum.map(fn pkg ->
       Task.async(fn ->
-        fetch_pkg_info(pkg.app, info_opts)
+        DepInfo.enrich(pkg, info_opts)
       end)
     end)
     |> Task.await_many()
@@ -133,16 +97,6 @@ defmodule Mix.Tasks.H.Deps do
     end)
   end
 
-  defp fetch_pkg_info(pkg_app, info_opts) do
-    {:ok, PkgCache.get_info(pkg_app, info_opts)}
-  rescue
-    error ->
-      {:error, pkg_app, Exception.message(error)}
-  catch
-    kind, reason ->
-      {:error, pkg_app, "#{kind}: #{inspect(reason)}"}
-  end
-
   def matches_search?(_app, nil), do: true
 
   def matches_search?(app, search) do
@@ -151,7 +105,36 @@ defmodule Mix.Tasks.H.Deps do
     Regex.match?(pattern, app)
   end
 
-  def get_dep_doc(%PkgInfo{} = dep, idx) do
-    "##{idx + 1} #{dep.app} (#{dep.latest_version})\n#{dep.desc}\n- Docs: #{PkgInfo.docs_url(dep)}\n- Code: #{PkgInfo.github_url(dep)}\n- Pkg.: #{dep.pkg_url}\n- API.: #{dep.api_url}\n"
+  def get_dep_doc(%DepInfo{} = dep, idx) do
+    versions =
+      [version_label("locked", dep.locked_version), version_label("latest", dep.latest_version)]
+      |> Enum.reject(&is_nil/1)
+      |> Enum.join(", ")
+
+    title = "##{idx + 1} #{dep.app}#{if versions == "", do: "", else: " (#{versions})"}"
+
+    details =
+      [
+        dep.description,
+        detail_line("Source type", dep.source_type),
+        detail_line("Source", dep.source),
+        detail_line("Tag", dep.tag),
+        detail_line("Commit", dep.revision),
+        detail_line("Sparse checkout", dep.sparse),
+        detail_line("Path", dep.path),
+        detail_line("Docs", dep.docs_url),
+        detail_line("Code", dep.links["GitHub"] || dep.links["github"]),
+        detail_line("Pkg.", dep.pkg_url),
+        detail_line("API.", dep.api_url)
+      ]
+      |> Enum.reject(&is_nil/1)
+
+    Enum.join([title | details], "\n") <> "\n"
   end
+
+  defp version_label(_label, nil), do: nil
+  defp version_label(label, version), do: "#{label}: #{version}"
+
+  defp detail_line(_label, nil), do: nil
+  defp detail_line(label, value), do: "- #{label}: #{value}"
 end

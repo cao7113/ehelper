@@ -21,6 +21,7 @@ defmodule Mix.Tasks.H.Dep.Spec do
   """
 
   use Mix.Task
+  alias Mix.DepInfo
 
   @switches [env_target: :boolean]
   @aliases [e: :env_target]
@@ -37,17 +38,9 @@ defmodule Mix.Tasks.H.Dep.Spec do
         _ -> Mix.raise("require exactly one dep-app name like: mix h.dep.spec req")
       end
 
-    loaded_opts = if opts[:env_target], do: [env: Mix.env(), target: Mix.target()], else: []
-
-    Mix.Dep.Converger.converge(loaded_opts)
-    |> Enum.find(fn %{app: dep_app} ->
-      Atom.to_string(dep_app) == dep_name
-    end)
+    DepInfo.find(dep_name, env_target: opts[:env_target])
     |> case do
-      nil ->
-        Mix.shell().error("Dependency #{dep_name} not found in the project.")
-
-      dep ->
+      {:ok, dep} ->
         dep
         |> Map.from_struct()
         |> Map.put(:deps, [:skipped])
@@ -65,6 +58,9 @@ defmodule Mix.Tasks.H.Dep.Spec do
         |> Map.to_list()
         |> Enum.sort()
         |> Ehelper.pp()
+
+      {:error, message} ->
+        Mix.shell().error(message)
     end
   end
 end

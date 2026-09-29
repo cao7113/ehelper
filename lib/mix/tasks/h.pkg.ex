@@ -38,6 +38,6 @@ defmodule Mix.Tasks.H.Pkg do
 
   defp general do
     Mix.shell().info("## Hex package tasks (h.pkg.<subtask> or h.pkg subtask)\n")
-    Mix.Tasks.Help.run(["--search", "h.pkg."])
+    Mix.Tasks.Help.run(["--search", "h.pkg"])
   end
 end
