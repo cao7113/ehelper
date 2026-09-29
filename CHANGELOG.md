@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v0.2.17 - 2026-09-29
+#### Bug Fixes
+- optimize h.dep* task - (3b4b64c) - Ryn Cao
+
+- - -
+
 ## v0.2.16 - 2026-09-28
 #### Miscellaneous Chores
 - add h.vsn - (cd310e8) - Ryn Cao
